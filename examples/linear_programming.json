@@ -1,0 +1,19 @@
+﻿{
+  "algorithm": "linear_programming",
+  "symbol": "PETR4.SA",
+  "objective_value": 0.00082,
+  "expected_return": 0.00114,
+  "weights": {
+    "ret_1d": 1.0,
+    "ret_5d": 0.0,
+    "ret_21d": 0.0
+  },
+  "elapsed_ms": 2.14,
+  "metadata": {
+    "risk_aversion": 0.35,
+    "solver": "scipy.linprog.highs",
+    "period": "2y",
+    "interval": "1d",
+    "samples": 480
+  }
+}

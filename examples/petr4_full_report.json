@@ -1,0 +1,111 @@
+﻿{
+  "symbol": "PETR4.SA",
+  "objective": "linear_risk_adjusted_return",
+  "results": [
+    {
+      "algorithm": "linear_programming",
+      "symbol": "PETR4.SA",
+      "objective_value": 0.00082,
+      "expected_return": 0.00114,
+      "weights": {
+        "ret_1d": 1.0,
+        "ret_5d": 0.0,
+        "ret_21d": 0.0
+      },
+      "elapsed_ms": 2.14,
+      "metadata": {
+        "risk_aversion": 0.35,
+        "solver": "scipy.linprog.highs",
+        "period": "2y",
+        "interval": "1d",
+        "samples": 480
+      }
+    },
+    {
+      "algorithm": "genetic_algorithm",
+      "symbol": "PETR4.SA",
+      "objective_value": 0.00079,
+      "expected_return": 0.00110,
+      "weights": {
+        "ret_1d": 0.88,
+        "ret_5d": 0.11,
+        "ret_21d": 0.01
+      },
+      "elapsed_ms": 11.45,
+      "metadata": {
+        "risk_aversion": 0.35,
+        "population_size": 32,
+        "generations": 50,
+        "seed": 42,
+        "period": "2y",
+        "interval": "1d",
+        "samples": 480
+      }
+    },
+    {
+      "algorithm": "simulated_annealing",
+      "symbol": "PETR4.SA",
+      "objective_value": 0.00077,
+      "expected_return": 0.00105,
+      "weights": {
+        "ret_1d": 0.73,
+        "ret_5d": 0.21,
+        "ret_21d": 0.06
+      },
+      "elapsed_ms": 8.93,
+      "metadata": {
+        "risk_aversion": 0.35,
+        "iterations": 250,
+        "initial_temperature": 1.0,
+        "cooling_rate": 0.98,
+        "seed": 42,
+        "period": "2y",
+        "interval": "1d",
+        "samples": 480
+      }
+    }
+  ],
+  "comparison": {
+    "ranking": [
+      "linear_programming",
+      "genetic_algorithm",
+      "simulated_annealing"
+    ],
+    "summary": [
+      {
+        "algorithm": "linear_programming",
+        "objective_value": 0.00082,
+        "expected_return": 0.00114,
+        "elapsed_ms": 2.14,
+        "weights": {
+          "ret_1d": 1.0,
+          "ret_5d": 0.0,
+          "ret_21d": 0.0
+        }
+      },
+      {
+        "algorithm": "genetic_algorithm",
+        "objective_value": 0.00079,
+        "expected_return": 0.00110,
+        "elapsed_ms": 11.45,
+        "weights": {
+          "ret_1d": 0.88,
+          "ret_5d": 0.11,
+          "ret_21d": 0.01
+        }
+      },
+      {
+        "algorithm": "simulated_annealing",
+        "objective_value": 0.00077,
+        "expected_return": 0.00105,
+        "elapsed_ms": 8.93,
+        "weights": {
+          "ret_1d": 0.73,
+          "ret_5d": 0.21,
+          "ret_21d": 0.06
+        }
+      }
+    ],
+    "winner": "linear_programming"
+  }
+}

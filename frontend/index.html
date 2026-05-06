@@ -1,0 +1,93 @@
+﻿<!doctype html>
+<html lang="pt-BR">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Otimizador MVP</title>
+    <link rel="stylesheet" href="./styles.css" />
+  </head>
+  <body>
+    <main class="layout">
+      <section class="panel">
+        <h1>Otimizador (LP/GA/SA)</h1>
+        <p>Compare resultados entre varios ativos no endpoint <code>/optimize</code>.</p>
+
+        <div class="row">
+          <label for="apiBase">API Base URL</label>
+          <input id="apiBase" value="http://localhost:8000" />
+        </div>
+
+        <div class="row">
+          <label for="symbols">Ativos</label>
+          <input id="symbols" value="PETR4.SA,VALE3.SA,ITUB4.SA" />
+        </div>
+
+        <div class="row">
+          <label for="algorithm">Algoritmo</label>
+          <select id="algorithm">
+            <option value="linear_programming">Linear Programming</option>
+            <option value="genetic_algorithm">Genetic Algorithm</option>
+            <option value="simulated_annealing">Simulated Annealing</option>
+            <option value="all">Todos (comparacao)</option>
+          </select>
+        </div>
+
+        <div class="row">
+          <label for="maxWeight">Max Weight</label>
+          <input id="maxWeight" value="0.6" />
+        </div>
+
+        <div class="row">
+          <button id="btnStatus" type="button">Verificar Status</button>
+          <button id="btnRun" type="button">Executar</button>
+        </div>
+
+        <div id="statusBox" class="status">Aguardando acao...</div>
+      </section>
+
+      <section class="panel">
+        <h2>Insights</h2>
+        <div class="insight-card">
+          <div class="insight-label">Ativo de maior risco</div>
+          <div id="insightRiskAsset" class="insight-value">-</div>
+        </div>
+        <div class="insight-card">
+          <div class="insight-label">Ativo de menor risco</div>
+          <div id="insightMinRiskAsset" class="insight-value">-</div>
+        </div>
+        <div class="insight-card">
+          <div class="insight-label">Melhor Sharpe</div>
+          <div id="insightBestSharpe" class="insight-value">-</div>
+        </div>
+        <div class="insight-card">
+          <div class="insight-label">Menor volatilidade de portfolio</div>
+          <div id="insightMinVol" class="insight-value">-</div>
+        </div>
+      </section>
+
+      <section class="panel">
+        <h2>Resultado</h2>
+        <div class="metrics">
+          <div><span>Universo:</span> <strong id="mSymbol">-</strong></div>
+          <div><span>Objective:</span> <strong id="mObjective">-</strong></div>
+          <div><span>Objective Value:</span> <strong id="mObjValue">-</strong></div>
+          <div><span>Expected Return:</span> <strong id="mReturn">-</strong></div>
+          <div><span>Elapsed (ms):</span> <strong id="mElapsed">-</strong></div>
+          <div><span>Portfolio Volatility:</span> <strong id="mPortVol">-</strong></div>
+          <div><span>Sharpe Ratio:</span> <strong id="mSharpe">-</strong></div>
+        </div>
+
+        <h3>Pesos por ativo</h3>
+        <pre id="weights">{}</pre>
+
+        <h3>Contribuicao de risco (%)</h3>
+        <pre id="riskPct">{}</pre>
+
+        <h3>Resposta bruta</h3>
+        <pre id="raw">{}</pre>
+      </section>
+    </main>
+
+    <script src="./app.js"></script>
+  </body>
+</html>

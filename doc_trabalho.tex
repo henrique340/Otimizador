@@ -1,0 +1,504 @@
+\documentclass[
+	% -- opções da classe memoir --
+	12pt,				% tamanho da fonte
+	openright,			% capítulos começam em pág ímpar (insere página vazia caso preciso)
+	oneside,			    % para impressão em recto e verso usar two side (Oposto a oneside)
+	a4paper,				% tamanho do papel. 
+	% -- opções da classe abntex2 --
+	%chapter=TITLE,		% títulos de capítulos convertidos em letras maiúsculas
+	%section=TITLE,		% títulos de seções convertidos em letras maiúsculas
+	%subsection=TITLE,	% títulos de subseções convertidos em letras maiúsculas
+	%subsubsection=TITLE,% títulos de subsubseções convertidos em letras maiúsculas
+	% -- opções do pacote babel --
+	english,			% idioma adicional para hifenização
+	french,			% idioma adicional para hifenização
+	spanish,			% idioma adicional para hifenização
+	brazil			% o último idioma é o principal do documento
+	]{abntex2}
+
+% ---
+% Pacotes básicos 
+% ---
+\usepackage{lmodern}			% Usa a fonte Latin Modern			
+\usepackage[T1]{fontenc}		% Selecao de codigos de fonte.
+\usepackage[utf8]{inputenc}	% Codificacao do documento (conversão automática dos acentos)
+\usepackage{indentfirst}		% Indenta o primeiro parágrafo de cada seção.
+\usepackage{color}			% Controle das cores
+\usepackage{graphicx}		% Inclusão de gráficos
+\usepackage{microtype} 		% para melhorias de justificação
+\usepackage[section]{placeins}
+\usepackage{needspace}
+% ---
+		
+% ---
+% Pacotes adicionais, usados apenas no âmbito do Modelo Canônico do abnteX2
+% ---
+%\usepackage{lipsum}				% para geração de dummy text
+% ---
+
+% ---
+% Pacotes de citações
+% ---
+\usepackage[brazilian,hyperpageref]{backref}	 % Paginas com as citações na bibl
+\usepackage[alf]{abntex2cite}	% Citações padrão ABNT
+
+% ---
+% Informações de dados para CAPA e FOLHA DE ROSTO
+% ---
+\titulo{Software de otimização de carteiras de investimentos da B3}
+\autor{Henrique Yuji Isogai Yoneoka \\ André Sapucaia de Araújo}
+\local{São Paulo}
+\data{2026}
+\orientador{Arnaldo Rabello de Aguiar Vallim Filho}
+\instituicao{%
+  Universidade Presbiteriana Mackenzie
+  \par
+  Faculdade de Computação e Informática}
+\tipotrabalho{Tipo do Trabalho (TCC)}
+% O preambulo deve conter o tipo do trabalho, o objetivo, 
+% o nome da instituição e a área de concentração 
+\preambulo{Modelo de documentação acadêmica apresentado aos alunos da Universidade Presbiteriana Mackenzie.}
+% ---
+
+
+% ---
+% Configurações de aparência do PDF final
+
+% alterando o aspecto da cor azul
+\definecolor{blue}{RGB}{41,5,195}
+
+% informações do PDF
+\makeatletter
+\hypersetup{
+     	%pagebackref=true,
+		pdftitle={\@title}, 
+		pdfauthor={\@author},
+    		pdfsubject={\imprimirpreambulo},
+	    pdfcreator={LaTeX with abnTeX2},
+		pdfkeywords={abnt}{latex}{abntex}{abntex2}{trabalho acadêmico}, 
+		colorlinks=true,       	% false: boxed links; true: colored links
+    		linkcolor=blue,          % color of internal links
+    		citecolor=blue,        	% color of links to bibliography
+    		filecolor=magenta,      	% color of file links
+		urlcolor=blue,
+		bookmarksdepth=4
+}
+\makeatother
+% --- 
+
+% ---
+% Posiciona figuras e tabelas no topo da página quando adicionadas sozinhas
+% em um página em branco. Ver https://github.com/abntex/abntex2/issues/170
+\makeatletter
+\setlength{\@fptop}{5pt} % Set distance from top of page to first float
+\makeatother
+% ---
+
+% ---
+% Possibilita criação de Quadros e Lista de quadros.
+% Ver https://github.com/abntex/abntex2/issues/176
+%
+\newcommand{\quadroname}{Quadro}
+\newcommand{\listofquadrosname}{Lista de quadros}
+
+\newfloat[chapter]{quadro}{loq}{\quadroname}
+\newlistof{listofquadros}{loq}{\listofquadrosname}
+\newlistentry{quadro}{loq}{0}
+
+% configurações para atender às regras da ABNT
+\setfloatadjustment{quadro}{\centering}
+\counterwithout{quadro}{chapter}
+\renewcommand{\cftquadroname}{\quadroname\space} 
+\renewcommand*{\cftquadroaftersnum}{\hfill--\hfill}
+
+\setfloatlocations{quadro}{hbtp} % Ver https://github.com/abntex/abntex2/issues/176
+% ---
+
+% --- 
+% Espaçamentos entre linhas e parágrafos 
+% --- 
+
+% O tamanho do parágrafo é dado por:
+\setlength{\parindent}{1.3cm}
+
+% Controle do espaçamento entre um parágrafo e outro:
+\setlength{\parskip}{0.2cm}  % tente também \onelineskip
+
+% ---
+% compila o indice
+% ---
+\makeindex
+% ---
+
+% ----
+% Início do documento
+% ----
+\begin{document}
+
+% Seleciona o idioma do documento (conforme pacotes do babel)
+%\selectlanguage{english}
+\selectlanguage{brazil}
+
+% Retira espaço extra obsoleto entre as frases.
+\frenchspacing 
+
+% ----------------------------------------------------------
+% ELEMENTOS PRÉ-TEXTUAIS
+% ----------------------------------------------------------
+% \pretextual
+
+% ---
+% Capa
+% ---
+\imprimircapa
+
+% ---
+% inserir o sumario
+% ---
+\pdfbookmark[0]{\contentsname}{toc}
+\tableofcontents*
+\cleardoublepage
+% ---
+
+
+
+% ----------------------------------------------------------
+% ELEMENTOS TEXTUAIS
+% ----------------------------------------------------------
+\textual
+
+
+\chapter{Introdução}
+
+A otimização de carteiras de investimentos é um problema clássico das finanças quantitativas, pois envolve a definição da melhor distribuição de capital entre diferentes ativos, considerando objetivos como maximização de retorno, minimização de risco e melhoria da relação risco-retorno. Com o aumento da disponibilidade de dados e da capacidade computacional, tornou-se viável empregar sistemas capazes de automatizar esse processo e comparar diferentes abordagens matemáticas e heurísticas de forma estruturada.
+
+Neste contexto, o projeto tem como objetivo desenvolver um software para análise e comparação de técnicas de otimização aplicadas a ativos da B3. A proposta do sistema é permitir a seleção de ativos, a importação de seus dados históricos e o cálculo de métricas estatísticas fundamentais, como retorno médio, variância, covariância e volatilidade. A partir dessas informações, o software executa métodos de otimização como Programação Linear, Algoritmo Genético e Simulated Annealing, possibilitando a geração e avaliação de carteiras de investimento sob diferentes parâmetros e restrições, como capital disponível, limites de alocação por ativo e possibilidade de venda a descoberto.
+
+Como resultado, espera-se que o sistema permita comparar, de forma padronizada, o desempenho de cada técnica por meio de indicadores como pesos dos ativos, retorno esperado, risco, índice de Sharpe e tempo de execução. Com isso, o trabalho se posiciona como uma contribuição para o estudo de métodos computacionais aplicados ao mercado financeiro, especialmente no contexto da tomada de decisão baseada em dados.
+
+
+
+
+\chapter{Definição da Demanda}
+\section{Problema}
+% ---
+A construção de uma carteira de investimentos envolve a análise simultânea de diferentes variáveis, como retorno esperado, risco, correlação entre ativos e restrições de alocação. No contexto da B3, essa tarefa se torna ainda mais desafiadora devido à grande quantidade de ativos disponíveis e à necessidade de comparar cenários distintos de investimento. Além disso, a escolha da melhor composição de carteira nem sempre pode ser feita de forma simples ou intuitiva, o que evidencia um problema de apoio à decisão. Ao mesmo tempo, esse cenário representa uma oportunidade para o uso de técnicas computacionais de otimização capazes de processar dados históricos, calcular métricas estatísticas e propor alocações mais eficientes de capital.
+
+% ---
+\section{Justificativa}
+% ---
+A demanda por esse produto surge da necessidade de comparar, de maneira estruturada e objetiva, diferentes técnicas de otimização aplicadas ao mercado financeiro. O projeto busca verificar as abordagens de Programação Linear, Algoritmo Genético e Simulated Annealing e como se comportam diante de um mesmo conjunto de ativos e restrições, permitindo avaliar qual método apresenta melhor desempenho em termos de retorno, risco, índice de Sharpe e tempo de execução. Dessa forma, a justificativa do projeto está tanto na sua relevância acadêmica, ao promover a comparação entre métodos quantitativos, quanto na sua utilidade prática, ao oferecer suporte à análise de carteiras de investimentos da B3.
+
+% ---
+\section{Descrição do Produto}
+% ---
+O produto a ser desenvolvido é um sistema de análise e comparação de técnicas de otimização aplicadas à alocação de ativos da B3. O software deverá permitir a seleção de ativos, a importação de dados históricos, o cálculo de métricas estatísticas — como retorno médio, variância, covariância e volatilidade — e a definição de parâmetros do problema, incluindo capital disponível, limites de alocação por ativo, possibilidade de venda a descoberto e função objetivo. A partir dessas informações, o sistema executará os métodos de otimização de forma independente ou comparativa, apresentando os pesos dos ativos, o retorno esperado, o risco, o índice de Sharpe e o tempo de execução de cada técnica, além de possibilitar a geração de relatórios e exportação de resultados em formatos como CSV ou PDF.
+
+% ---
+\section{Atores}
+% ---
+O principal usuário do sistema é o investidor ou analista que deseja encontrar a melhor alocação de capital para sua carteira, utilizando o software como ferramenta de apoio à decisão. Como envolvidos secundários, destacam-se a fonte de dados da B3, responsável por fornecer os dados históricos necessários às análises, e a biblioteca numérica ou solver, que oferece suporte aos cálculos estatísticos e aos processos de otimização. Em uma perspectiva mais ampla, o produto também pode impactar estudantes, pesquisadores e profissionais da área de finanças quantitativas, uma vez que o sistema pode ser utilizado para fins de estudo, experimentação e comparação entre técnicas. 
+
+% ---
+\section{Etapas necessárias}
+% ---
+De forma geral, o desenvolvimento do produto exige, inicialmente, o levantamento e a organização dos requisitos funcionais e não funcionais do sistema. Em seguida, torna-se necessário modelar a solução por meio de diagramas de caso de uso, classes, sequência, pacotes e implantação, de modo a estruturar corretamente a arquitetura do software. Após essa etapa, devem ser implementados os módulos principais do sistema, incluindo importação de dados históricos, cálculo de métricas estatísticas, execução dos algoritmos de otimização, comparação dos resultados e geração de relatórios. Posteriormente, é preciso integrar esses módulos, realizar testes e validar os resultados produzidos pelo sistema, observando a consistência dos cálculos e o comportamento das técnicas de otimização. Por fim, o produto deve ser documentado de forma adequada, tanto no código quanto na descrição formal do modelo matemático utilizado.
+
+
+% ---
+\section{Principais critérios de qualidades do produto}
+% ---
+Os principais critérios de qualidade do sistema envolvem, em primeiro lugar, a usabilidade, de modo que a interface permita configurar parâmetros de forma simples e visualizar os resultados com clareza. Também se destaca a confiabilidade, especialmente pela necessidade de reproduzir execuções das metaheurísticas por meio da definição de seed aleatória. Outro critério essencial é o desempenho, já que o sistema deve apresentar tempo de execução adequado para carteiras com aproximadamente 10 a 30 ativos. Além disso, a facilidade de suporte e manutenção é importante, razão pela qual as técnicas de otimização devem ser implementadas em módulos independentes. Somam-se a isso a escalabilidade, para permitir a inclusão futura de novas técnicas; a precisão numérica, para garantir estabilidade nos cálculos estatísticos e de otimização; a portabilidade, para execução em ambiente local padrão; e a documentação, indispensável para assegurar entendimento, manutenção e evolução do software.
+
+
+
+\chapter{Requisitos do Produto}
+Nesta seção são apresentados os requisitos funcionais e não funcionais do sistema proposto. Os requisitos funcionais descrevem as funcionalidades que o software deve oferecer, enquanto os requisitos não funcionais definem atributos de qualidade e restrições relacionadas ao seu desenvolvimento e operação.
+\section{Requisitos funcionais}
+
+\begin{quadro}[htb]
+\caption{Requisitos funcionais do sistema}
+\label{qua:requisitos-funcionais}
+\begin{tabularx}{\textwidth}{|p{2cm}|X|}
+\hline
+\textbf{Código} & \textbf{Descrição} \\ \hline
+RF01 & O sistema deve permitir a seleção de ativos negociados na B3. \\ \hline
+RF02 & O sistema deve permitir a importação de dados históricos dos ativos selecionados. \\ \hline
+RF03 & O sistema deve calcular métricas estatísticas dos ativos, incluindo retorno médio, variância, covariância e volatilidade. \\ \hline
+RF04 & O sistema deve permitir a definição dos parâmetros do problema, tais como capital disponível, limites mínimo e máximo de alocação por ativo, possibilidade de venda a descoberto e função objetivo. \\ \hline
+RF05 & O sistema deve implementar o método de Programação Linear para a otimização da carteira de investimentos. \\ \hline
+RF06 & O sistema deve implementar pelo menos uma técnica meta-heurística, como Algoritmo Genético ou Simulated Annealing. \\ \hline
+RF07 & O sistema deve permitir a execução dos métodos de otimização de forma individual ou comparativa. \\ \hline
+RF08 & O sistema deve apresentar, para cada método executado, os pesos dos ativos, o retorno esperado, o risco, o índice de Sharpe e o tempo de execução. \\ \hline
+RF09 & O sistema deve gerar um relatório comparativo entre as técnicas de otimização utilizadas. \\ \hline
+RF10 & O sistema deve permitir a exportação dos resultados em formatos como CSV ou PDF. \\ \hline
+\end{tabularx}
+\fonte{Elaborado pelos autores.}
+
+\end{quadro}
+
+\section{Requisitos não funcionais}
+\begin{quadro}[htb]
+\caption{Requisitos não funcionais do sistema}
+\label{qua:requisitos-nao-funcionais}
+\begin{tabularx}{\textwidth}{|p{2cm}|X|}
+\hline
+\textbf{Código} & \textbf{Descrição} \\ \hline
+RNF01 & Usabilidade: A interface deve permitir configuração simples dos parâmetros e visualização clara dos resultados. \\ \hline
+RNF02 & Confiabilidade: O sistema deve permitir a definição de uma semente aleatória (\textit{seed}) para garantir a reprodutibilidade das execuções das meta-heurísticas. \\ \hline
+RNF03 & Desempenho: O sistema deve apresentar tempo de execução adequado para carteiras compostas por aproximadamente 10 a 30 ativos. \\ \hline
+RNF04 & Manutenção: Cada técnica de otimização deve ser implementada em módulos independentes, de modo a facilitar a manutenção e a evolução do sistema. \\ \hline
+RNF05 & Escalabilidade: A arquitetura do sistema deve permitir a inclusão futura de novas técnicas de otimização. \\ \hline
+RNF06 & Precisão numérica: Os cálculos estatísticos e de otimização devem utilizar bibliotecas com estabilidade numérica adequada. \\ \hline
+RNF07 & Portabilidade: O sistema deve ser executável em ambiente local padrão, sem dependência de infraestrutura específica. \\ \hline
+RNF08 & Documentação: O código-fonte deve conter documentação técnica, bem como descrição formal do modelo matemático adotado. \\ \hline
+
+\end{tabularx}
+\fonte{Elaborado pelos autores.}
+\end{quadro}
+
+\chapter{Wireframes}
+
+\FloatBarrier
+\needspace{0.6\textheight}
+\section{Tela inicial}
+\begin{figure}[!htb]
+    \centering
+    \caption{Tela inicial}
+    \includegraphics[width=0.8\textwidth,height=0.6\textheight,keepaspectratio]{Imagens/Tela inicial (1).png}
+    \legend{Fonte: Elaborado pelos autores.}
+    \label{fig:wireframe-tela-inicial}
+\end{figure}
+
+\FloatBarrier
+\needspace{0.5\textheight}
+\section{Tela de Seleção de Ativos}
+\begin{figure}[!htb]
+    \centering
+    \caption{Tela de seleção de ativos}
+    \includegraphics[width=0.8\textwidth,height=0.7\textheight,keepaspectratio]{Imagens/Seleção de ativos.png}
+    \legend{Fonte: Elaborado pelos autores.}
+    \label{fig:wireframe-selecao-ativos}
+\end{figure}
+
+\FloatBarrier
+\needspace{0.5\textheight}
+\section{Tela de resultados}
+\begin{figure}[!htb]
+    \centering
+    \caption{Tela de resultados}
+    \includegraphics[width=0.8\textwidth,height=0.7\textheight,keepaspectratio]{Imagens/Resultados (1).png}
+    \legend{Fonte: Elaborado pelos autores.}
+    \label{fig:wireframe-resultados}
+\end{figure}
+
+\FloatBarrier
+\needspace{0.5\textheight}
+\section{Tela de Comparação de Resultados}
+\begin{figure}[!htb]
+    \centering
+    \caption{Tela de comparação de resultados -- visão geral}
+    \includegraphics[width=0.8\textwidth,height=0.7\textheight,keepaspectratio]{Imagens/Comparação de Resultados - Visão Geral.png}
+    \legend{Fonte: Elaborado pelos autores.}
+    \label{fig:wireframe-comparacao-visao-geral}
+\end{figure}
+
+\FloatBarrier
+\needspace{0.5\textheight}
+\section{Tela de Comparação Detalhada de Resultados}
+\begin{figure}[!htb]
+    \centering
+    \caption{Tela de comparação de resultados -- visão detalhada}
+    \includegraphics[width=0.8\textwidth,height=0.7\textheight,keepaspectratio]{Imagens/Comparação de Resultados - Cards de Performance - Comparação detalhada.png}
+    \legend{Fonte: Elaborado pelos autores.}
+    \label{fig:wireframe-comparacao-detalhada}
+\end{figure}
+
+
+\chapter{Modelagem}
+\section{Diagrama de caso de uso}
+\begin{figure}[htb]
+    \centering
+    \caption{Diagrama de casos de uso do sistema}
+    \includegraphics[width=0.9\textwidth]{Imagens/Diagrama-caso-uso.png}
+    \legend{Fonte: Elaborado pelos autores.}
+    \label{fig:casos-de-uso}
+\end{figure}
+
+\section{Diagrama de classe de domínio}
+\begin{figure}[htb]
+    \centering
+    \caption{Diagrama de casos de uso do sistema}
+    \includegraphics[width=0.9\textwidth]{Imagens/Diagrama-classes-dominio.png}
+    \legend{Fonte: Elaborado pelos autores.}
+    \label{fig:casos-de-uso}
+\end{figure}
+
+\section{Diagrama de sequência}
+
+\subsection{Diagrama de sequência - Importar dados}
+\begin{figure}[htb]
+    \centering
+    \caption{Diagrama de sequência - importar dados}
+    \includegraphics[width=0.9\textwidth]{Imagens/Diagrama-sequencia-importar-dados.png}
+    \legend{Fonte: Elaborado pelos autores.}
+    \label{fig:casos-de-uso}
+\end{figure}
+
+\subsection{Diagrama de sequência - Exportar resultados}
+
+\begin{figure}[htb]
+    \centering
+    \caption{Diagrama de sequência - exportar resultados}
+    \includegraphics[width=0.9\textwidth]{Imagens/Diagrama-sequencia-exportar-resultados.png}
+    \legend{Fonte: Elaborado pelos autores.}
+    \label{fig:casos-de-uso}
+\end{figure}
+
+\subsection{Diagrama de sequência - Executar otimização}
+
+\begin{figure}[htb]
+    \centering
+    \caption{Diagrama de sequência - executar otimização}
+    \includegraphics[width=0.7\textwidth]{Imagens/Diagrama-sequencia-executar-otimizacao.png}
+    \legend{Fonte: Elaborado pelos autores.}
+    \label{fig:casos-de-uso}
+\end{figure}
+
+\subsection{Diagrama de sequência - Calcular Métricas}
+
+\begin{figure}[htb]
+    \centering
+    \caption{Diagrama de sequencia - calcular métricas}
+    \includegraphics[width=0.7\textwidth]{Imagens/Diagrama-sequencia-calcular-metricas.png}
+    \legend{Fonte: Elaborado pelos autores.}
+    \label{fig:casos-de-uso}
+\end{figure}
+
+\section{Diagramas de pacotes}
+
+\begin{figure}[htb]
+    \centering
+    \caption{Diagrama de pacotes}
+    \includegraphics[width=0.7\textwidth]{Imagens/Diagrama-pacotes.png}
+    \legend{Fonte: Elaborado pelos autores.}
+\end{figure}
+
+\section{Diagramas de implantação}
+
+\begin{figure}[htb]
+    \centering
+    \caption{Diagrama de implantação}
+    \includegraphics[width=0.6\textwidth]{Imagens/Diagrama-implantacao.png}
+    \legend{Fonte: Elaborado pelos autores.}
+\end{figure}
+
+\section{Arquitetura final}
+
+\begin{figure}[htb]
+    \centering
+    \caption{Diagrama da arquitetura final}
+    \includegraphics[width=0.7\textwidth]{Imagens/Arquitetura.png}
+    \legend{Fonte: Elaborado pelos autores.}
+    \label{fig:casos-de-uso}
+\end{figure}
+
+\chapter{Descrição da Arquitetura do Sistema e das Ferramentas}
+
+\section{Visão geral da arquitetura}
+
+A arquitetura do sistema foi concebida de forma modular, com o objetivo de organizar as responsabilidades da aplicação e facilitar sua manutenção, evolução e reutilização. Considerando que o software proposto realiza importação de dados históricos, processamento estatístico, execução de técnicas de otimização e geração de relatórios, optou-se por uma arquitetura em camadas, na qual cada módulo desempenha uma função específica no fluxo da aplicação.
+
+De modo geral, a solução é composta por uma camada de apresentação, responsável pela interação com o usuário; uma camada de aplicação, encarregada do controle do fluxo de execução; uma camada de processamento, voltada ao tratamento de dados, cálculo estatístico e otimização da carteira; uma camada de dados, destinada ao armazenamento e recuperação das informações históricas e dos resultados gerados; e, por fim, um módulo de relatórios, responsável pela consolidação e exportação das análises realizadas.
+
+Essa organização arquitetural contribui para a separação de responsabilidades, reduz o acoplamento entre os componentes e favorece a extensibilidade do sistema, permitindo a futura inclusão de novos métodos de otimização, novas fontes de dados e novos formatos de saída.
+
+\section{Descrição das camadas e componentes do sistema}
+
+\subsection{Camada de apresentação}
+
+A camada de apresentação é responsável pela interface com o usuário. Nela, o investidor, analista ou pesquisador pode selecionar os ativos da B3 que serão analisados, definir o período histórico desejado, configurar os parâmetros da carteira, escolher a técnica de otimização e visualizar os resultados produzidos pelo sistema.
+
+Essa camada deve priorizar simplicidade e clareza, permitindo que os dados de entrada e saída sejam exibidos de forma organizada. Além disso, é nela que se concentram as funcionalidades relacionadas à visualização de gráficos, tabelas comparativas e relatórios finais.
+
+\subsection{Camada de aplicação}
+
+A camada de aplicação atua como intermediária entre a interface do usuário e os módulos internos do sistema. Sua principal responsabilidade é coordenar o fluxo de execução das operações, recebendo as solicitações da camada de apresentação e encaminhando-as aos módulos adequados.
+
+Nessa camada, encontram-se componentes como o controlador de execução e o gerenciador de experimentos, que organizam as etapas do processo analítico: importação dos dados, cálculo das métricas estatísticas, execução dos algoritmos de otimização, comparação dos resultados e geração de relatórios. Dessa forma, a camada de aplicação centraliza a lógica de orquestração do sistema.
+
+\subsection{Camada de processamento}
+
+A camada de processamento concentra as operações analíticas e matemáticas do software. Ela é composta, principalmente, pelos módulos de importação de dados, cálculo estatístico, otimização da carteira e comparação dos resultados.
+
+O módulo de importação é responsável por obter os dados históricos dos ativos selecionados, seja por meio de arquivos locais, seja por integração com uma fonte externa de dados. O módulo estatístico realiza cálculos como retorno médio, variância, covariância e volatilidade, que servem de base para os algoritmos de otimização.
+
+Já o módulo de otimização reúne as diferentes técnicas avaliadas no projeto, como Programação Linear, Algoritmo Genético e Simulated Annealing. Cada uma dessas abordagens recebe os mesmos dados de entrada e parâmetros definidos pelo usuário, permitindo a geração de resultados comparáveis. Após a execução das técnicas, o módulo de comparação consolida os indicadores de desempenho de cada método, como retorno esperado, risco, índice de Sharpe e tempo de execução.
+
+\subsection{Camada de dados}
+
+A camada de dados é responsável pelo armazenamento e pela recuperação das informações utilizadas pelo sistema. Nela são mantidos os dados históricos dos ativos, bem como os resultados produzidos pelas execuções das técnicas de otimização.
+
+Essa camada tem como finalidade garantir que as informações estejam disponíveis para consulta, reuso e exportação, além de contribuir para a organização do fluxo de processamento. Dependendo da implementação adotada, essa persistência pode ser realizada por meio de arquivos estruturados, como CSV, ou por uma base local de dados.
+
+\subsection{Módulo de relatórios}
+
+O módulo de relatórios é responsável por transformar os resultados gerados pelo sistema em saídas consolidadas e interpretáveis. A partir das informações calculadas pelos algoritmos, esse componente organiza tabelas, resumos comparativos e arquivos exportáveis, permitindo ao usuário registrar e analisar os resultados de forma mais estruturada.
+
+Esse módulo é especialmente relevante para o projeto, pois uma das propostas do software é justamente comparar técnicas de otimização. Assim, a geração de relatórios amplia a utilidade prática da ferramenta, tanto em contexto acadêmico quanto em aplicações de apoio à decisão.
+
+\section{Fluxo técnico de funcionamento do sistema}
+
+O funcionamento do sistema inicia-se com a interação do usuário por meio da interface. Nessa etapa, são definidos os ativos da B3 a serem analisados, o período histórico, os parâmetros da carteira e a técnica de otimização desejada. Em seguida, a camada de aplicação recebe essas informações e coordena a execução do processo.
+
+Na sequência, o módulo de importação obtém os dados históricos necessários, que são encaminhados ao módulo estatístico para cálculo das métricas fundamentais. Esses resultados servem de entrada para os algoritmos de otimização, que processam a alocação dos ativos conforme a técnica selecionada.
+
+Após a execução dos métodos, os resultados são armazenados e comparados, gerando indicadores consolidados de desempenho. Por fim, essas informações retornam à interface, onde são exibidas ao usuário, e também podem ser encaminhadas ao módulo de relatórios para exportação em formatos apropriados.
+
+Esse fluxo permite que o sistema realize, de maneira organizada e reproduzível, a análise comparativa entre diferentes métodos de otimização aplicados à formação de carteiras de investimentos.
+
+\section{Ferramentas e tecnologias utilizadas}
+
+Para a implementação do sistema, propõe-se a utilização da linguagem de programação Python, devido à sua ampla aplicação em projetos de ciência de dados, finanças quantitativas e otimização matemática. Python apresenta sintaxe acessível, grande quantidade de bibliotecas especializadas e boa integração entre módulos analíticos e interfaces simples.
+
+No tratamento e manipulação dos dados históricos, podem ser utilizadas bibliotecas como Pandas e NumPy, que oferecem recursos adequados para leitura de arquivos, organização de tabelas, processamento numérico e cálculo matricial. Para as operações estatísticas e matemáticas, podem ser empregados recursos adicionais voltados ao cálculo de variância, covariância, volatilidade e indicadores derivados.
+
+Na implementação das técnicas de otimização, podem ser utilizadas bibliotecas especializadas de apoio matemático, além de rotinas próprias desenvolvidas pelos autores para representar os algoritmos estudados no projeto. Isso é especialmente importante para garantir controle sobre os parâmetros experimentais e permitir uma comparação justa entre os métodos avaliados.
+
+Para a apresentação dos resultados, pode ser utilizada uma interface local simples, construída com biblioteca apropriada para aplicações analíticas, ou uma aplicação com interface gráfica básica. Já para a geração de gráficos e relatórios, podem ser empregados recursos voltados à visualização de dados e exportação de documentos.
+
+\section{Justificativa da escolha das ferramentas}
+
+A escolha das ferramentas foi orientada pela natureza do problema abordado no projeto. Como o sistema envolve manipulação de séries históricas, cálculo estatístico, modelagem matemática e comparação de algoritmos, tornou-se necessário adotar tecnologias que oferecessem suporte eficiente para esse tipo de processamento.
+
+Nesse contexto, a linguagem Python se mostra adequada por reunir, em um mesmo ecossistema, recursos para leitura de dados, cálculo numérico, implementação de algoritmos e visualização de resultados. Além disso, sua ampla utilização em áreas como análise quantitativa e aprendizado de máquina contribui para a disponibilidade de documentação, exemplos e bibliotecas de apoio.
+
+Outro fator relevante é a modularidade proporcionada por esse conjunto de ferramentas, o que facilita a divisão do sistema em componentes independentes. Essa característica está alinhada à proposta arquitetural do software e favorece a manutenção, os testes e a expansão futura da aplicação.
+
+\section{Ambiente de desenvolvimento e execução}
+
+O sistema foi projetado para execução em ambiente local padrão, em computador pessoal, sem a necessidade inicial de infraestrutura complexa. Essa escolha é compatível com o escopo acadêmico do projeto, pois permite o desenvolvimento, a validação e a demonstração da solução de forma acessível.
+
+O ambiente de desenvolvimento pode contar com editor ou ambiente integrado compatível com Python, além das bibliotecas necessárias para manipulação de dados, cálculos estatísticos, implementação dos algoritmos e geração de saídas visuais. Os dados históricos podem ser armazenados localmente, e os resultados das simulações podem ser salvos para posterior análise.
+
+Essa configuração reduz a complexidade da implantação, mantendo o foco principal do trabalho na comparação entre técnicas de otimização e na estruturação de um software funcional de apoio à análise de carteiras da B3.
+
+\section{Considerações finais do capítulo}
+
+A arquitetura proposta busca atender às necessidades funcionais e não funcionais do sistema, organizando a aplicação em módulos coesos e de responsabilidades bem definidas. Essa estrutura oferece suporte ao fluxo completo da solução, desde a entrada de dados até a geração de relatórios comparativos.
+
+Além disso, a definição das ferramentas e do ambiente de execução demonstra a viabilidade técnica do projeto, evidenciando que a solução pode ser implementada com tecnologias adequadas ao contexto de análise quantitativa e otimização de carteiras. Dessa forma, este capítulo complementa a modelagem apresentada anteriormente ao detalhar como o sistema será efetivamente estruturado e desenvolvido.
+
+% ----------------------------------------------------------
+% ELEMENTOS PÓS-TEXTUAIS
+% ----------------------------------------------------------
+\postextual
+% ----------------------------------------------------------
+
+% ----------------------------------------------------------
+% Referências bibliográficas
+% ----------------------------------------------------------
+%\bibliography{doc_referencias}
+
+
+\end{document}

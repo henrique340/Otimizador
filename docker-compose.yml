@@ -1,0 +1,9 @@
+﻿services:
+  frontend:
+    build:
+      context: .
+      dockerfile: frontend/Dockerfile
+    container_name: otimizador-frontend
+    ports:
+      - "8080:80"
+    restart: unless-stopped

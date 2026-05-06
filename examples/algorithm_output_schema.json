@@ -1,0 +1,27 @@
+﻿{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "title": "AlgorithmOutput",
+  "type": "object",
+  "required": [
+    "algorithm",
+    "symbol",
+    "objective_value",
+    "expected_return",
+    "weights",
+    "elapsed_ms",
+    "metadata"
+  ],
+  "properties": {
+    "algorithm": {"type": "string"},
+    "symbol": {"type": "string"},
+    "objective_value": {"type": "number"},
+    "expected_return": {"type": "number"},
+    "weights": {
+      "type": "object",
+      "additionalProperties": {"type": "number"},
+      "minProperties": 1
+    },
+    "elapsed_ms": {"type": "number", "minimum": 0},
+    "metadata": {"type": "object"}
+  }
+}

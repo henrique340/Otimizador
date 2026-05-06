@@ -1,0 +1,22 @@
+﻿{
+  "algorithm": "simulated_annealing",
+  "symbol": "PETR4.SA",
+  "objective_value": 0.00077,
+  "expected_return": 0.00105,
+  "weights": {
+    "ret_1d": 0.73,
+    "ret_5d": 0.21,
+    "ret_21d": 0.06
+  },
+  "elapsed_ms": 8.93,
+  "metadata": {
+    "risk_aversion": 0.35,
+    "iterations": 250,
+    "initial_temperature": 1.0,
+    "cooling_rate": 0.98,
+    "seed": 42,
+    "period": "2y",
+    "interval": "1d",
+    "samples": 480
+  }
+}

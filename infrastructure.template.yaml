@@ -1,0 +1,77 @@
+AWSTemplateFormatVersion: "2010-09-09"
+Transform: AWS::Serverless-2016-10-31
+Description: MVP QuantVision - Otimizador
+
+Globals:
+  Function:
+    Runtime: python3.11
+    Timeout: 30
+    MemorySize: 512
+    Environment:
+      Variables:
+        OTIMIZADOR_SYMBOL: PETR4.SA
+        OTIMIZADOR_PERIOD: 2y
+        OTIMIZADOR_INTERVAL: 1d
+        OTIMIZADOR_CACHE_DIR: /tmp/cache
+
+Resources:
+  QuantvisionApi:
+    Type: AWS::Serverless::HttpApi
+    Properties:
+      StageName: v1
+
+  QuantvisionDataFunction:
+    Type: AWS::Serverless::Function
+    Properties:
+      FunctionName: quantvision-data-handler
+      Handler: otimizador.infrastructure.handlers.quantvision_data_handler.lambda_handler
+      CodeUri: .
+      Events:
+        Data:
+          Type: HttpApi
+          Properties:
+            ApiId: !Ref QuantvisionApi
+            Path: /data
+            Method: GET
+
+  QuantvisionOptimizeFunction:
+    Type: AWS::Serverless::Function
+    Properties:
+      FunctionName: quantvision-optimize-handler
+      Handler: otimizador.infrastructure.handlers.quantvision_optimize_handler.lambda_handler
+      CodeUri: .
+      Events:
+        Optimize:
+          Type: HttpApi
+          Properties:
+            ApiId: !Ref QuantvisionApi
+            Path: /optimize
+            Method: POST
+
+  QuantvisionReportFunction:
+    Type: AWS::Serverless::Function
+    Properties:
+      FunctionName: quantvision-report-handler
+      Handler: otimizador.infrastructure.handlers.quantvision_report_handler.lambda_handler
+      CodeUri: .
+      Events:
+        Report:
+          Type: HttpApi
+          Properties:
+            ApiId: !Ref QuantvisionApi
+            Path: /report
+            Method: GET
+
+  QuantvisionStatusFunction:
+    Type: AWS::Serverless::Function
+    Properties:
+      FunctionName: quantvision-status-handler
+      Handler: otimizador.infrastructure.handlers.quantvision_status_handler.lambda_handler
+      CodeUri: .
+      Events:
+        Status:
+          Type: HttpApi
+          Properties:
+            ApiId: !Ref QuantvisionApi
+            Path: /status
+            Method: GET

@@ -1,0 +1,467 @@
+\documentclass[
+	% -- opções da classe memoir --
+	12pt,				% tamanho da fonte
+	openright,			% capítulos começam em pág ímpar (insere página vazia caso preciso)
+	oneside,			    % para impressão em recto e verso usar two side (Oposto a oneside)
+	a4paper,				% tamanho do papel. 
+	% -- opções da classe abntex2 --
+	%chapter=TITLE,		% títulos de capítulos convertidos em letras maiúsculas
+	%section=TITLE,		% títulos de seções convertidos em letras maiúsculas
+	%subsection=TITLE,	% títulos de subseções convertidos em letras maiúsculas
+	%subsubsection=TITLE,% títulos de subsubseções convertidos em letras maiúsculas
+	% -- opções do pacote babel --
+	english,			% idioma adicional para hifenização
+	french,			% idioma adicional para hifenização
+	spanish,			% idioma adicional para hifenização
+	brazil			% o último idioma é o principal do documento
+	]{abntex2}
+
+% ---
+% Pacotes básicos 
+% ---
+\usepackage{lmodern}			% Usa a fonte Latin Modern			
+\usepackage[T1]{fontenc}		% Selecao de codigos de fonte.
+\usepackage[utf8]{inputenc}	% Codificacao do documento (conversão automática dos acentos)
+\usepackage{indentfirst}		% Indenta o primeiro parágrafo de cada seção.
+\usepackage{color}			% Controle das cores
+\usepackage{graphicx}		% Inclusão de gráficos
+\usepackage{microtype} 		% para melhorias de justificação
+\usepackage[section]{placeins}
+\usepackage{needspace}
+\usepackage{colortbl}        % cores em células de tabela (FURPS+)
+\usepackage{tabularx}        % tabelas com largura ajustável
+% ---
+
+% ---
+% Pacotes de citações
+% ---
+\usepackage[brazilian,hyperpageref]{backref}	 % Paginas com as citações na bibl
+\usepackage[alf]{abntex2cite}	% Citações padrão ABNT
+
+% ---
+% Informações de dados para CAPA e FOLHA DE ROSTO
+% ---
+\titulo{Software de otimização de carteiras de investimentos da B3}
+\autor{Henrique Yuji Isogai Yoneoka \\ André Sapucaia de Araújo}
+\local{São Paulo}
+\data{2026}
+\orientador{Arnaldo Rabello de Aguiar Vallim Filho}
+\instituicao{%
+  Universidade Presbiteriana Mackenzie
+  \par
+  Faculdade de Computação e Informática}
+\tipotrabalho{Tipo do Trabalho (TCC)}
+\preambulo{Modelo de documentação acadêmica apresentado aos alunos da Universidade Presbiteriana Mackenzie.}
+% ---
+
+% ---
+% Configurações de aparência do PDF final
+\definecolor{blue}{RGB}{41,5,195}
+
+\makeatletter
+\hypersetup{
+     	%pagebackref=true,
+		pdftitle={\@title}, 
+		pdfauthor={\@author},
+    		pdfsubject={\imprimirpreambulo},
+	    pdfcreator={LaTeX with abnTeX2},
+		pdfkeywords={abnt}{latex}{abntex}{abntex2}{trabalho acadêmico}, 
+		colorlinks=true,       	% false: boxed links; true: colored links
+    		linkcolor=blue,          % color of internal links
+    		citecolor=blue,        	% color of links to bibliography
+    		filecolor=magenta,      	% color of file links
+		urlcolor=blue,
+		bookmarksdepth=4
+}
+\makeatother
+
+\makeatletter
+\setlength{\@fptop}{5pt}
+\makeatother
+
+% Quadros
+\newcommand{\quadroname}{Quadro}
+\newcommand{\listofquadrosname}{Lista de quadros}
+\newfloat[chapter]{quadro}{loq}{\quadroname}
+\newlistof{listofquadros}{loq}{\listofquadrosname}
+\newlistentry{quadro}{loq}{0}
+\setfloatadjustment{quadro}{\centering}
+\counterwithout{quadro}{chapter}
+\renewcommand{\cftquadroname}{\quadroname\space} 
+\renewcommand*{\cftquadroaftersnum}{\hfill--\hfill}
+\setfloatlocations{quadro}{hbtp}
+
+% Espaçamentos
+\setlength{\parindent}{1.3cm}
+\setlength{\parskip}{0.2cm}
+
+\makeindex
+
+% ────────────────────────────────────────────────────────────
+% INÍCIO DO DOCUMENTO
+% ────────────────────────────────────────────────────────────
+\begin{document}
+
+\selectlanguage{brazil}
+\frenchspacing
+
+\imprimircapa
+
+\pdfbookmark[0]{\contentsname}{toc}
+\tableofcontents*
+\cleardoublepage
+
+\textual
+
+% ════════════════════════════════════════════════════════════
+% CAPÍTULO 1 — INTRODUÇÃO
+% ════════════════════════════════════════════════════════════
+\chapter{Introdução}
+
+A otimização de carteiras de investimentos é um problema clássico das finanças quantitativas, pois envolve a definição da melhor distribuição de capital entre diferentes ativos, considerando objetivos como maximização de retorno, minimização de risco e melhoria da relação risco-retorno. Com o aumento da disponibilidade de dados e da capacidade computacional, tornou-se viável empregar sistemas capazes de automatizar esse processo e comparar diferentes abordagens matemáticas e heurísticas de forma estruturada.
+
+Neste contexto, o projeto tem como objetivo desenvolver um software para análise e comparação de técnicas de otimização aplicadas a ativos da B3. A proposta do sistema é permitir a seleção de ativos, a importação de seus dados históricos e o cálculo de métricas estatísticas fundamentais, como retorno médio, variância, covariância e volatilidade. A partir dessas informações, o software executa métodos de otimização como Programação Linear, Algoritmo Genético e Simulated Annealing, possibilitando a geração e avaliação de carteiras de investimento sob diferentes parâmetros e restrições, como capital disponível, limites de alocação por ativo e possibilidade de venda a descoberto.
+
+Como resultado, espera-se que o sistema permita comparar, de forma padronizada, o desempenho de cada técnica por meio de indicadores como pesos dos ativos, retorno esperado, risco, índice de Sharpe e tempo de execução. Com isso, o trabalho se posiciona como uma contribuição para o estudo de métodos computacionais aplicados ao mercado financeiro, especialmente no contexto da tomada de decisão baseada em dados.
+
+% ════════════════════════════════════════════════════════════
+% CAPÍTULO 2 — DEFINIÇÃO DA DEMANDA
+% ════════════════════════════════════════════════════════════
+\chapter{Definição da Demanda}
+
+\section{Problema}
+
+A construção de uma carteira de investimentos envolve a análise simultânea de diferentes variáveis, como retorno esperado, risco, correlação entre ativos e restrições de alocação. No contexto da B3, essa tarefa se torna ainda mais desafiadora devido à grande quantidade de ativos disponíveis e à necessidade de comparar cenários distintos de investimento. Além disso, a escolha da melhor composição de carteira nem sempre pode ser feita de forma simples ou intuitiva, o que evidencia um problema de apoio à decisão. Ao mesmo tempo, esse cenário representa uma oportunidade para o uso de técnicas computacionais de otimização capazes de processar dados históricos, calcular métricas estatísticas e propor alocações mais eficientes de capital.
+
+\section{Justificativa}
+
+A demanda por esse produto surge da necessidade de comparar, de maneira estruturada e objetiva, diferentes técnicas de otimização aplicadas ao mercado financeiro. O projeto busca verificar as abordagens de Programação Linear, Algoritmo Genético e Simulated Annealing e como se comportam diante de um mesmo conjunto de ativos e restrições, permitindo avaliar qual método apresenta melhor desempenho em termos de retorno, risco, índice de Sharpe e tempo de execução. Dessa forma, a justificativa do projeto está tanto na sua relevância acadêmica, ao promover a comparação entre métodos quantitativos, quanto na sua utilidade prática, ao oferecer suporte à análise de carteiras de investimentos da B3.
+
+\section{Descrição do Produto}
+
+O produto a ser desenvolvido é um sistema de análise e comparação de técnicas de otimização aplicadas à alocação de ativos da B3. O software deverá permitir a seleção de ativos, a importação de dados históricos, o cálculo de métricas estatísticas — como retorno médio, variância, covariância e volatilidade — e a definição de parâmetros do problema, incluindo capital disponível, limites de alocação por ativo, possibilidade de venda a descoberto e função objetivo. A partir dessas informações, o sistema executará os métodos de otimização de forma independente ou comparativa, apresentando os pesos dos ativos, o retorno esperado, o risco, o índice de Sharpe e o tempo de execução de cada técnica, além de possibilitar a geração de relatórios e exportação de resultados em formatos como CSV ou PDF.
+
+\section{Atores}
+
+O principal usuário do sistema é o investidor ou analista que deseja encontrar a melhor alocação de capital para sua carteira, utilizando o software como ferramenta de apoio à decisão. Como envolvidos secundários, destacam-se a fonte de dados da B3, responsável por fornecer os dados históricos necessários às análises, e o Amazon S3, utilizado para armazenamento e disponibilização dos relatórios gerados. Em uma perspectiva mais ampla, o produto também pode impactar estudantes, pesquisadores e profissionais da área de finanças quantitativas, uma vez que o sistema pode ser utilizado para fins de estudo, experimentação e comparação entre técnicas.
+
+\section{Etapas necessárias}
+
+De forma geral, o desenvolvimento do produto exige, inicialmente, o levantamento e a organização dos requisitos funcionais e não funcionais do sistema. Em seguida, torna-se necessário modelar a solução por meio de diagramas de caso de uso, classes, sequência, pacotes e implantação, de modo a estruturar corretamente a arquitetura do software. Após essa etapa, devem ser implementados os microsserviços principais do sistema — importação de dados históricos, cálculo de métricas estatísticas, execução dos algoritmos de otimização e geração de relatórios — empacotados em containers Docker e implantados na AWS. Posteriormente, é preciso configurar o pipeline de CI/CD, integrar os serviços, realizar testes e validar os resultados produzidos pelo sistema. Por fim, o produto deve ser documentado de forma adequada, tanto no código quanto na descrição formal do modelo matemático utilizado.
+
+\section{Principais critérios de qualidade do produto}
+
+Os principais critérios de qualidade do sistema envolvem, em primeiro lugar, a usabilidade, de modo que a interface permita configurar parâmetros de forma simples e visualizar os resultados com clareza. Também se destaca a confiabilidade, especialmente pela necessidade de reproduzir execuções das metaheurísticas por meio da definição de \textit{seed} aleatória. Outro critério essencial é o desempenho, já que o sistema deve executar os três algoritmos para carteiras de 10 a 30 ativos em tempo total inferior a 60 segundos. Além disso, a facilidade de suporte e manutenção é importante, razão pela qual cada microsserviço é implementado de forma independente, seguindo o padrão Controller--Service--Repository. Somam-se a isso a escalabilidade, para permitir a inclusão futura de novas técnicas; a precisão numérica, para garantir estabilidade nos cálculos; e a rastreabilidade operacional, assegurada pelo \textit{endpoint} \texttt{/health} em cada serviço.
+
+% ════════════════════════════════════════════════════════════
+% CAPÍTULO 3 — REQUISITOS DO PRODUTO
+% ════════════════════════════════════════════════════════════
+\chapter{Requisitos do Produto}
+
+Os requisitos são as capacidades e condições que o sistema deve atender \cite{larman2007}. Neste capítulo são apresentados os requisitos funcionais, que descrevem as funcionalidades que o software deve oferecer, e os requisitos não funcionais, categorizados segundo o modelo FURPS+ \cite{grady1992}, que define atributos de qualidade nas dimensões de Funcionalidade, Usabilidade (\textit{Usability}), Confiabilidade (\textit{Reliability}), Desempenho (\textit{Performance}), Facilidade de Suporte (\textit{Supportability}) e categorias complementares como Implementação, Interface e Operações. Os requisitos estão organizados por prioridade e compõem o \textit{backlog} do produto.
+
+% ── Requisitos Funcionais ─────────────────────────────────────────────
+\section{Requisitos Funcionais}
+
+Os requisitos funcionais descrevem as capacidades e comportamentos que o sistema deve apresentar para atender aos objetivos do produto. O Quadro~\ref{qua:requisitos-funcionais} apresenta os requisitos funcionais priorizados, ordenados do mais crítico ao menos urgente.
+
+\begin{quadro}[htb]
+\caption{Requisitos funcionais do sistema — \textit{backlog} do produto}
+\label{qua:requisitos-funcionais}
+\begin{tabularx}{\textwidth}{|p{1.5cm}|p{1.8cm}|X|}
+\hline
+\rowcolor[HTML]{BDD7EE}
+\textbf{Código} & \textbf{Prioridade} & \textbf{Descrição} \\ \hline
+RF01 & Alta &
+  O sistema deve permitir a seleção de ativos negociados na B3 por meio de busca por código (\textit{ticker}). \\ \hline
+RF02 & Alta &
+  O sistema deve permitir a importação dos dados históricos de preços dos ativos selecionados a partir da API da B3. \\ \hline
+RF03 & Alta &
+  O sistema deve calcular as métricas estatísticas dos ativos: retorno médio, variância, covariância e volatilidade. \\ \hline
+RF04 & Alta &
+  O sistema deve implementar o método de Programação Linear para otimização da carteira de investimentos. \\ \hline
+RF05 & Alta &
+  O sistema deve implementar o Algoritmo Genético como técnica meta-heurística de otimização. \\ \hline
+RF06 & Alta &
+  O sistema deve implementar o Simulated Annealing como técnica meta-heurística de otimização. \\ \hline
+RF07 & Alta &
+  O sistema deve permitir a definição dos parâmetros do problema: capital disponível, limites mínimo e máximo de alocação por ativo, possibilidade de venda a descoberto e função objetivo. \\ \hline
+RF08 & Alta &
+  O sistema deve permitir a execução dos métodos de otimização de forma individual ou comparativa, utilizando os mesmos dados de entrada. \\ \hline
+RF09 & Alta &
+  O sistema deve apresentar, para cada método executado, os pesos dos ativos, o retorno esperado, o risco, o índice de Sharpe e o tempo de execução. \\ \hline
+RF10 & Média &
+  O sistema deve gerar um relatório comparativo entre os resultados das técnicas de otimização executadas. \\ \hline
+RF11 & Média &
+  O sistema deve permitir a exportação dos resultados em formato CSV ou PDF, armazenando o arquivo no Amazon S3. \\ \hline
+RF12 & Média &
+  O sistema deve exibir gráficos comparativos de retorno, risco e índice de Sharpe entre os algoritmos executados. \\ \hline
+RF13 & Baixa &
+  O sistema deve permitir a definição de uma semente aleatória (\textit{seed}) para garantir a reprodutibilidade das execuções das meta-heurísticas. \\ \hline
+RF14 & Baixa &
+  O sistema deve registrar o histórico de execuções realizadas pelo usuário, permitindo consulta posterior aos resultados salvos. \\ \hline
+\end{tabularx}
+\fonte{Elaborado pelos autores.}
+\end{quadro}
+
+% ── Requisitos Não Funcionais ─────────────────────────────────────────
+\section{Requisitos Não Funcionais}
+
+Os requisitos não funcionais definem os atributos de qualidade do sistema e são categorizados segundo o modelo FURPS+ \cite{grady1992}. O Quadro~\ref{qua:requisitos-nao-funcionais} apresenta esses requisitos organizados por categoria e prioridade.
+
+\begin{quadro}[htb]
+\caption{Requisitos não funcionais do sistema — modelo FURPS+}
+\label{qua:requisitos-nao-funcionais}
+\begin{tabularx}{\textwidth}{|p{1.5cm}|p{2.8cm}|p{1.8cm}|X|}
+\hline
+\rowcolor[HTML]{BDD7EE}
+\textbf{Código} & \textbf{Categoria} & \textbf{Prioridade} & \textbf{Descrição} \\ \hline
+RNF01 & Usabilidade & Alta &
+  A interface deve permitir a configuração dos parâmetros da carteira e a visualização dos resultados de forma simples e clara, sem exigir conhecimento técnico avançado. \\ \hline
+RNF02 & Usabilidade & Média &
+  O sistema deve apresentar mensagens de erro compreensíveis ao usuário em caso de entrada inválida ou falha de comunicação com a API da B3. \\ \hline
+RNF03 & Confiabilidade & Alta &
+  O sistema deve garantir a reprodutibilidade das execuções das meta-heurísticas por meio da definição de semente aleatória (\textit{seed}). \\ \hline
+RNF04 & Confiabilidade & Alta &
+  O sistema deve manter a consistência dos dados históricos armazenados no banco, sem duplicação de registros para o mesmo ativo e período. \\ \hline
+RNF05 & Desempenho & Alta &
+  O sistema deve executar os três algoritmos de otimização para carteiras de 10 a 30 ativos em tempo total inferior a 60 segundos em ambiente de produção. \\ \hline
+RNF06 & Desempenho & Média &
+  As respostas da API do sistema aos \textit{endpoints} de consulta de resultados devem ser retornadas em menos de 2 segundos. \\ \hline
+RNF07 & Facilidade de Suporte & Alta &
+  Cada técnica de otimização deve ser implementada em microsserviço e módulo independentes, de modo a facilitar manutenção, testes e evolução do sistema. \\ \hline
+RNF08 & Facilidade de Suporte & Média &
+  A arquitetura de microsserviços deve permitir a inclusão de novas técnicas de otimização sem alteração dos demais serviços. \\ \hline
+RNF09 & Facilidade de Suporte & Média &
+  O código-fonte deve conter documentação técnica (\textit{docstrings}) e descrição formal do modelo matemático adotado nos algoritmos. \\ \hline
+RNF10 & Implementação & Alta &
+  O sistema deve ser implementado em Python com FastAPI para os microsserviços de \textit{back-end} e React para o \textit{front-end}. \\ \hline
+RNF11 & Implementação & Alta &
+  Cada microsserviço deve ser empacotado em container Docker e orquestrado via Docker Compose no ambiente de produção na AWS (EC2 + RDS + S3). \\ \hline
+RNF12 & Implementação & Alta &
+  Os cálculos estatísticos e de otimização devem utilizar bibliotecas com estabilidade numérica adequada (\textit{NumPy}, \textit{SciPy}). \\ \hline
+RNF13 & Interface & Alta &
+  O sistema deve consumir a API externa da B3 via HTTPS/JSON para obtenção dos dados históricos de preços dos ativos. \\ \hline
+RNF14 & Interface & Média &
+  O sistema deve integrar-se ao Amazon S3 para armazenamento e disponibilização dos arquivos de relatório gerados. \\ \hline
+RNF15 & Operações & Média &
+  O sistema deve expor um \textit{endpoint} \texttt{/health} em cada microsserviço para verificação de disponibilidade pelo Docker e pelo ambiente de produção. \\ \hline
+RNF16 & Operações & Baixa &
+  O sistema deve registrar \textit{logs} de execução de cada algoritmo de otimização, incluindo parâmetros utilizados, tempo de execução e resultado obtido. \\ \hline
+\end{tabularx}
+\fonte{Elaborado pelos autores.}
+\end{quadro}
+
+% ════════════════════════════════════════════════════════════
+% CAPÍTULO 4 — WIREFRAMES
+% ════════════════════════════════════════════════════════════
+\chapter{Wireframes}
+
+\FloatBarrier
+\needspace{0.6\textheight}
+\section{Tela inicial}
+\begin{figure}[!htb]
+    \centering
+    \caption{Tela inicial}
+    \includegraphics[width=0.8\textwidth,height=0.6\textheight,keepaspectratio]{Imagens/Tela inicial (1).png}
+    \legend{Fonte: Elaborado pelos autores.}
+    \label{fig:wireframe-tela-inicial}
+\end{figure}
+
+\FloatBarrier
+\needspace{0.5\textheight}
+\section{Tela de Seleção de Ativos}
+\begin{figure}[!htb]
+    \centering
+    \caption{Tela de seleção de ativos}
+    \includegraphics[width=0.8\textwidth,height=0.7\textheight,keepaspectratio]{Imagens/Seleção de ativos.png}
+    \legend{Fonte: Elaborado pelos autores.}
+    \label{fig:wireframe-selecao-ativos}
+\end{figure}
+
+\FloatBarrier
+\needspace{0.5\textheight}
+\section{Tela de Resultados}
+\begin{figure}[!htb]
+    \centering
+    \caption{Tela de resultados}
+    \includegraphics[width=0.8\textwidth,height=0.7\textheight,keepaspectratio]{Imagens/Resultados (1).png}
+    \legend{Fonte: Elaborado pelos autores.}
+    \label{fig:wireframe-resultados}
+\end{figure}
+
+\FloatBarrier
+\needspace{0.5\textheight}
+\section{Tela de Comparação de Resultados}
+\begin{figure}[!htb]
+    \centering
+    \caption{Tela de comparação de resultados -- visão geral}
+    \includegraphics[width=0.8\textwidth,height=0.7\textheight,keepaspectratio]{Imagens/Comparação de Resultados - Visão Geral.png}
+    \legend{Fonte: Elaborado pelos autores.}
+    \label{fig:wireframe-comparacao-geral}
+\end{figure}
+
+\FloatBarrier
+\needspace{0.5\textheight}
+\section{Tela de Comparação Detalhada de Resultados}
+\begin{figure}[!htb]
+    \centering
+    \caption{Tela de comparação de resultados -- visão detalhada}
+    \includegraphics[width=0.8\textwidth,height=0.7\textheight,keepaspectratio]{Imagens/Comparação de Resultados - Cards de Performance - Comparação detalhada.png}
+    \legend{Fonte: Elaborado pelos autores.}
+    \label{fig:wireframe-comparacao-detalhada}
+\end{figure}
+
+% ════════════════════════════════════════════════════════════
+% CAPÍTULO 5 — MODELAGEM
+% ════════════════════════════════════════════════════════════
+\chapter{Modelagem}
+
+% ── 5.1 Diagrama de Caso de Uso ──────────────────────────────
+\section{Diagrama de Caso de Uso}
+
+O diagrama da Figura~\ref{fig:casos-de-uso} apresenta os casos de uso identificados para o sistema, os atores envolvidos e seus relacionamentos. O ator principal é o Usuário (investidor ou analista), responsável por acionar todas as funcionalidades do sistema. Os atores de suporte são a API B3, que fornece os dados históricos, e o Amazon S3, que armazena os relatórios exportados. Os relacionamentos \texttt{<<include>>} indicam dependências obrigatórias entre casos de uso, enquanto \texttt{<<extend>>} indica extensões opcionais.
+
+\begin{figure}[htb]
+    \centering
+    \caption{Diagrama de casos de uso do sistema}
+    \includegraphics[width=0.95\textwidth]{Imagens/Diagrama-caso-uso.png}
+    \legend{Fonte: Elaborado pelos autores.}
+    \label{fig:casos-de-uso}
+\end{figure}
+
+\subsection{Especificação dos casos de uso}
+
+A seguir são descritos resumidamente os principais casos de uso identificados para o sistema.
+
+\textbf{UC01 -- Selecionar Ativos:} O usuário acessa o sistema e informa os códigos dos ativos da B3 que deseja analisar. O sistema valida os códigos informados e apresenta os ativos selecionados para confirmação.
+
+\textbf{UC02 -- Importar Dados Históricos:} O usuário solicita a importação dos dados históricos dos ativos selecionados. O sistema requisita os preços históricos à API da B3 via HTTPS/JSON, armazena os registros no banco de dados e confirma ao usuário o sucesso da operação. Este caso de uso inclui UC03.
+
+\textbf{UC03 -- Calcular Métricas Estatísticas:} O sistema recupera os dados históricos armazenados e calcula retorno médio, variância, covariância e volatilidade dos ativos, armazenando os resultados para uso na otimização.
+
+\textbf{UC04 -- Definir Parâmetros da Carteira:} O usuário configura os parâmetros da otimização: capital disponível, limites mínimo e máximo de alocação por ativo, possibilidade de venda a descoberto e função objetivo. Este caso de uso inclui UC05.
+
+\textbf{UC05 -- Executar Otimização:} O sistema executa os três algoritmos — Programação Linear, Algoritmo Genético e Simulated Annealing — com os mesmos dados e parâmetros, armazenando os resultados de cada técnica. Este caso de uso inclui UC03 e UC06.
+
+\textbf{UC06 -- Visualizar Resultados:} O usuário consulta os resultados das otimizações executadas, incluindo pesos dos ativos, retorno esperado, risco, índice de Sharpe e tempo de execução de cada técnica. Este caso de uso pode ser estendido por UC08.
+
+\textbf{UC07 -- Exportar Relatório:} O usuário solicita a exportação dos resultados em formato CSV ou PDF. O sistema gera o arquivo e o disponibiliza via Amazon S3. Este caso de uso inclui UC06.
+
+\textbf{UC08 -- Comparar Algoritmos:} O usuário solicita uma análise comparativa detalhada entre os três métodos, com gráficos de fronteira eficiente, índice de Sharpe e alocação de ativos lado a lado.
+
+% ── 5.2 Diagrama de Classes de Domínio ───────────────────────
+\section{Diagrama de Classes de Domínio}
+
+\begin{figure}[htb]
+    \centering
+    \caption{Diagrama de classes de domínio do sistema}
+    \includegraphics[width=0.95\textwidth]{Imagens/Diagrama-classes-dominio.png}
+    \legend{Fonte: Elaborado pelos autores.}
+    \label{fig:classes-dominio}
+\end{figure}
+
+% ── 5.3 Diagramas de Sequência ───────────────────────────────
+\section{Diagramas de Sequência}
+
+Seguindo a recomendação de não criar diagramas de sequência para todos os cenários, foram selecionados apenas os casos de uso mais críticos para a iteração de desenvolvimento seguinte \cite{larman2007}. Os critérios de seleção consideraram: (1) casos de uso que formam o fluxo principal do sistema, sem os quais os demais não podem ser executados; e (2) casos de uso que documentam as colaborações mais complexas entre os objetos da arquitetura.
+
+Nesse contexto, foram priorizados o \textbf{UC02 -- Importar Dados Históricos}, apresentado de forma completa, e o \textbf{UC05 -- Executar Otimização}, apresentado em nível simplificado de sistema. O UC02 é o pré-requisito absoluto: sem dados históricos importados da B3, nenhum outro caso de uso possui entrada válida. O UC05 representa o núcleo do projeto, sendo responsável pela execução e comparação dos três métodos de otimização. Os demais casos de uso são dependentes desses dois e serão modelados em iterações subsequentes.
+
+\subsection{UC02 -- Importar Dados Históricos}
+
+O diagrama da Figura~\ref{fig:seq-importar} descreve a troca de mensagens entre o ator e os objetos do sistema durante a importação dos dados históricos. O fluxo envolve o \texttt{:DataController}, que recebe a requisição do usuário; o \texttt{:DataService}, que aciona a busca dos dados junto à API externa da B3 por meio de automensagem; o \texttt{:AtivoRepository}, responsável pelo acesso isolado ao banco de dados; e o \texttt{:PostgreSQL}, onde os dados são persistidos.
+
+\begin{figure}[htb]
+    \centering
+    \caption{Diagrama de sequência -- UC02: Importar Dados Históricos}
+    \includegraphics[width=\textwidth]{Imagens/Diagrama-sequencia-importar-dados.png}
+    \legend{Fonte: Elaborado pelos autores.}
+    \label{fig:seq-importar}
+\end{figure}
+
+\subsection{UC05 -- Executar Otimização}
+
+O diagrama da Figura~\ref{fig:seq-otimizar} apresenta o UC05 em nível simplificado, com o ator \texttt{:Usuario} interagindo com o \texttt{:Sistema} tratado como caixa preta. O fluxo mostra as mensagens de entrada do usuário (seleção de ativos, definição de parâmetros, acionamento da otimização), as automensagens internas do sistema representando a execução dos três algoritmos e a comparação dos resultados, e o retorno final ao usuário.
+
+\begin{figure}[htb]
+    \centering
+    \caption{Diagrama de sequência -- UC05: Executar Otimização (simplificado)}
+    \includegraphics[width=0.75\textwidth]{Imagens/Diagrama-sequencia-executar-otimizacao.png}
+    \legend{Fonte: Elaborado pelos autores.}
+    \label{fig:seq-otimizar}
+\end{figure}
+
+% ── 5.4 Diagrama de Pacotes ──────────────────────────────────
+\section{Diagrama de Pacotes}
+
+O diagrama da Figura~\ref{fig:pacotes} representa a organização do sistema em pacotes segundo o padrão de arquitetura em camadas \cite{richards2015}. O sistema é estruturado em quatro camadas: \textbf{Apresentação}, responsável pela interface com o usuário e pelos controllers que recebem as requisições HTTP; \textbf{Negócio}, que concentra os serviços com a lógica de negócio de cada microsserviço; \textbf{Persistência}, que encapsula o acesso ao banco de dados por meio do padrão Repository; e \textbf{Banco de Dados}, composta pelo PostgreSQL hospedado no Amazon RDS, pelo Amazon S3 para armazenamento de relatórios e pelo Amazon ECR para registro das imagens Docker.
+
+\begin{figure}[htb]
+    \centering
+    \caption{Diagrama de pacotes do sistema}
+    \includegraphics[width=0.95\textwidth]{Imagens/Diagrama-pacotes.png}
+    \legend{Fonte: Elaborado pelos autores.}
+    \label{fig:pacotes}
+\end{figure}
+
+% ── 5.5 Diagrama de Implantação ──────────────────────────────
+\section{Diagrama de Implantação}
+
+O diagrama da Figura~\ref{fig:implantacao} apresenta a arquitetura física do sistema, representando os nós de hardware e software e seus relacionamentos conforme a notação UML de implantação. O nó externo \texttt{<<node>> ServidorAplicacao (AWS)} contém dois nós internos: \texttt{app:EC2}, que hospeda a aplicação Python via Docker Compose com os microsserviços \textit{api-gateway}, \textit{frontend-service}, \textit{data-service}, \textit{optimization-service} e \textit{report-service}; e \texttt{db:EC2}, que hospeda o banco de dados PostgreSQL em container Docker, sincronizado com o Amazon RDS. Os relatórios gerados são armazenados no nó \texttt{storage:S3}. O ator \texttt{:Usuario} acessa o sistema via browser por meio do protocolo HTTP, enquanto o \texttt{data-service} comunica-se com a \texttt{apiB3:ExternalSystem} via HTTPS. O pipeline de CI/CD, representado pelo nó \texttt{cicd:GitHub Actions}, realiza o \textit{push} das imagens Docker para o Amazon ECR, de onde são realizados os \textit{pulls} pelos containers em execução.
+
+\begin{figure}[htb]
+    \centering
+    \caption{Diagrama de implantação UML -- microsserviços com Docker e AWS}
+    \includegraphics[width=\textwidth]{Imagens/Diagrama-implantacao.png}
+    \legend{Fonte: Elaborado pelos autores.}
+    \label{fig:implantacao}
+\end{figure}
+
+% ════════════════════════════════════════════════════════════
+% CAPÍTULO 6 — DESCRIÇÃO DA ARQUITETURA
+% ════════════════════════════════════════════════════════════
+\chapter{Descrição da Arquitetura do Sistema e das Ferramentas}
+
+\section{Visão geral da arquitetura}
+
+A arquitetura do sistema foi concebida segundo o padrão de arquitetura em camadas (\textit{Layered Architecture}) \cite{richards2015}, organizado em quatro camadas: Apresentação, Negócio, Persistência e Banco de Dados. Cada camada possui responsabilidade única e só se comunica com a camada imediatamente abaixo, garantindo separação de responsabilidades, baixo acoplamento e alta coesão entre os componentes.
+
+O sistema é implementado como um conjunto de microsserviços independentes, cada um empacotado em container Docker e orquestrado via Docker Compose. Essa abordagem permite o desenvolvimento, o teste e o deploy de cada serviço de forma autônoma, além de possibilitar a escalabilidade horizontal do componente mais demandado — o \textit{optimization-service} — sem impacto nos demais serviços.
+
+\section{Padrão Controller -- Service -- Repository}
+
+Internamente, cada microsserviço segue o padrão de três camadas: \textbf{Controller}, responsável por receber e validar a requisição HTTP; \textbf{Service}, que implementa a lógica de negócio; e \textbf{Repository}, que encapsula o acesso ao banco de dados. Essa separação garante que nenhuma query SQL esteja espalhada pelo código de negócio, facilitando a manutenção e os testes unitários de cada camada de forma independente.
+
+\section{Microsserviços}
+
+O sistema é composto por cinco microsserviços:
+
+O \textbf{api-gateway} (Nginx, porta 80) é o único serviço exposto para a internet. Recebe todas as requisições do usuário e as roteia para o serviço correto: \texttt{/api/data} para o \textit{data-service}, \texttt{/api/optimize} para o \textit{optimization-service} e \texttt{/api/report} para o \textit{report-service}.
+
+O \textbf{frontend-service} (React, porta 3000) implementa a interface do usuário, permitindo a seleção de ativos, configuração de parâmetros, visualização de resultados e exportação de relatórios.
+
+O \textbf{data-service} (Python com FastAPI, porta 8001) é responsável por buscar os dados históricos de preços na API da B3 e calcular as métricas estatísticas dos ativos (retorno médio, variância, covariância e volatilidade).
+
+O \textbf{optimization-service} (Python com FastAPI, porta 8002) executa os três algoritmos de otimização — Programação Linear, Algoritmo Genético e Simulated Annealing — e persiste os resultados no banco de dados.
+
+O \textbf{report-service} (Python com FastAPI, porta 8003) monta o relatório comparativo entre os algoritmos e realiza o \textit{upload} do arquivo CSV ou PDF no Amazon S3.
+
+\section{Ferramentas e tecnologias}
+
+A linguagem de programação adotada para os microsserviços de \textit{back-end} é Python, pela sua ampla aplicação em ciência de dados e otimização matemática. O \textit{framework} FastAPI é utilizado por combinar alto desempenho, geração automática de documentação e suporte nativo a tipagem estática. Para os cálculos numéricos, são utilizadas as bibliotecas NumPy e SciPy, que oferecem estabilidade numérica adequada para operações matriciais e otimização. O \textit{front-end} é implementado em React, que proporciona interface reativa e componentizada.
+
+O banco de dados relacional utilizado é o PostgreSQL, hospedado no Amazon RDS dentro do \textit{free tier}. Os arquivos de relatório são armazenados no Amazon S3. As imagens Docker de cada microsserviço são registradas no Amazon ECR e implantadas em uma instância EC2 t3.micro via Docker Compose. O pipeline de CI/CD é implementado com GitHub Actions, automatizando o \textit{build} das imagens e o \textit{deploy} na instância EC2 a cada \textit{push} na \textit{branch} principal.
+
+\section{Considerações finais do capítulo}
+
+A arquitetura proposta atende aos requisitos funcionais e não funcionais do sistema, em especial aos critérios de desempenho, manutenibilidade e escalabilidade. A separação em microsserviços independentes, aliada ao padrão Controller--Service--Repository dentro de cada serviço, garante que o sistema possa evoluir — com a adição de novos algoritmos ou novas fontes de dados — sem impacto nas demais partes da aplicação.
+
+% ════════════════════════════════════════════════════════════
+% ELEMENTOS PÓS-TEXTUAIS
+% ════════════════════════════════════════════════════════════
+\postextual
+
+\bibliography{doc_referencias}
+
+\end{document}

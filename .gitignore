@@ -1,0 +1,10 @@
+﻿__pycache__/
+.pytest_cache/
+.ruff_cache/
+*.pyc
+.venv/
+venv/
+dist/
+cache/*.csv
+cache/test_*/
+.cache/
