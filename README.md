@@ -190,7 +190,11 @@ Secrets:
 Variables:
 - `AWS_REGION`: ex. `sa-east-1`
 - `LAMBDA_FUNCTION_NAME`: ex. `quantvision-optimize-handler-dev`
+- `LAMBDA_DEPLOY_BUCKET`: bucket S3 para upload do zip de deploy
 
 ### Observacao OIDC
 
-A role da AWS precisa confiar no provedor OIDC do GitHub e permitir `lambda:update-function-code` e `lambda:invokeFunction`.
+A role da AWS precisa confiar no provedor OIDC do GitHub e permitir:
+- `s3:PutObject` no bucket de deploy
+- `lambda:update-function-code`
+- `lambda:invokeFunction`

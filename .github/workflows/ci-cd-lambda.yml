@@ -63,6 +63,7 @@ jobs:
 
       - name: Build Lambda package
         run: |
+          set -euo pipefail
           python -m pip install --upgrade pip
           rm -rf dist/lambda_package
           mkdir -p dist/lambda_package
@@ -71,11 +72,22 @@ jobs:
           cd dist/lambda_package
           zip -r ../otimizador-lambda.zip .
 
-      - name: Deploy Lambda code
+      - name: Upload package to S3
         run: |
+          set -euo pipefail
+          PACKAGE_KEY="lambda/${{ github.repository }}/${{ github.sha }}/otimizador-lambda.zip"
+          echo "PACKAGE_KEY=$PACKAGE_KEY" >> "$GITHUB_ENV"
+          aws s3 cp dist/otimizador-lambda.zip \
+            "s3://${{ vars.LAMBDA_DEPLOY_BUCKET }}/$PACKAGE_KEY" \
+            --region "${{ vars.AWS_REGION }}"
+
+      - name: Deploy Lambda code (from S3)
+        run: |
+          set -euo pipefail
           aws lambda update-function-code \
             --function-name "${{ vars.LAMBDA_FUNCTION_NAME }}" \
-            --zip-file fileb://dist/otimizador-lambda.zip \
+            --s3-bucket "${{ vars.LAMBDA_DEPLOY_BUCKET }}" \
+            --s3-key "${PACKAGE_KEY}" \
             --region "${{ vars.AWS_REGION }}"
 
       - name: Smoke invoke Lambda
