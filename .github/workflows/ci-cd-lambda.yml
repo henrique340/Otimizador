@@ -69,8 +69,12 @@ jobs:
           mkdir -p dist/lambda_package
           pip install -r requirements.txt -t dist/lambda_package
           cp -r src/otimizador dist/lambda_package/
+          echo "Package folder size:"
+          du -sh dist/lambda_package
           cd dist/lambda_package
           zip -r ../otimizador-lambda.zip .
+          echo "Zip size:"
+          du -h ../otimizador-lambda.zip
 
       - name: Upload package to S3
         run: |

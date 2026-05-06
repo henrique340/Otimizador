@@ -1,9 +1,8 @@
-﻿"""Implementacao do otimizador com restricoes de alocacao."""
+"""Implementacao do otimizador com restricoes de alocacao."""
 
 from __future__ import annotations
 
 import numpy as np
-from scipy.optimize import minimize
 
 from otimizador.algorithms.common import build_result, normalize_weights, timed_run
 from otimizador.domain.models import AlgorithmResult, OptimizationRequest
@@ -18,27 +17,49 @@ def _solve_lp(request: OptimizationRequest, objective: ObjectiveFunction) -> np.
             "Configuracao invalida: max_weight * quantidade_de_ativos deve ser >= 1."
         )
 
-    initial = normalize_weights(np.ones(n_assets), max_weight=request.max_weight)
+    rng = np.random.default_rng(request.seed)
 
-    def negative_objective(weights: np.ndarray) -> float:
-        return -objective.evaluate(
+    def score(weights: np.ndarray) -> float:
+        return objective.evaluate(
             weights,
             request.expected_returns,
             request.volatility,
             request.covariance_matrix,
         )
 
-    result = minimize(
-        fun=negative_objective,
-        x0=initial,
-        method="SLSQP",
-        bounds=[(0.0, request.max_weight)] * n_assets,
-        constraints=[{"type": "eq", "fun": lambda w: np.sum(w) - 1.0}],
-    )
+    # Busca multi-start leve para manter compatibilidade com Lambda sem scipy.
+    best = normalize_weights(np.ones(n_assets), max_weight=request.max_weight)
+    best_score = score(best)
 
-    if not result.success or result.x is None:
-        raise ValueError(f"Falha na otimizacao com restricoes: {result.message}")
-    return normalize_weights(result.x, max_weight=request.max_weight)
+    samples = max(1200, 400 * n_assets)
+    for _ in range(samples):
+        candidate = normalize_weights(
+            rng.dirichlet(np.ones(n_assets)), max_weight=request.max_weight
+        )
+        candidate_score = score(candidate)
+        if candidate_score > best_score:
+            best = candidate
+            best_score = candidate_score
+
+    # Refinamento local simples (hill climbing)
+    for step in [0.08, 0.04, 0.02, 0.01]:
+        improved = True
+        while improved:
+            improved = False
+            for i in range(n_assets):
+                for j in range(n_assets):
+                    if i == j:
+                        continue
+                    proposal = best.copy()
+                    proposal[i] += step
+                    proposal[j] -= step
+                    proposal = normalize_weights(proposal, max_weight=request.max_weight)
+                    proposal_score = score(proposal)
+                    if proposal_score > best_score + 1e-12:
+                        best = proposal
+                        best_score = proposal_score
+                        improved = True
+    return best
 
 
 def run_linear_programming(
@@ -51,5 +72,5 @@ def run_linear_programming(
         weights=weights,
         objective=objective,
         elapsed_ms=elapsed_ms,
-        extra_metadata={"solver": "scipy.optimize.minimize.slsqp"},
+        extra_metadata={"solver": "numpy_multistart_hillclimb"},
     )
