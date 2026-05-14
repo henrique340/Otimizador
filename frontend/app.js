@@ -3,10 +3,15 @@
 const el = {
   apiBase: byId("apiBase"),
   symbols: byId("symbols"),
+  startDate: byId("startDate"),
+  endDate: byId("endDate"),
+  interval: byId("interval"),
   algorithm: byId("algorithm"),
   maxWeight: byId("maxWeight"),
   btnStatus: byId("btnStatus"),
   btnRun: byId("btnRun"),
+  btnExport: byId("btnExport"),
+  btnPdf: byId("btnPdf"),
   statusBox: byId("statusBox"),
   symbol: byId("mSymbol"),
   objective: byId("mObjective"),
@@ -23,6 +28,10 @@ const el = {
   insightBestSharpe: byId("insightBestSharpe"),
   insightMinVol: byId("insightMinVol"),
 };
+
+if (window.OTIMIZADOR_API_BASE_URL) {
+  el.apiBase.value = window.OTIMIZADOR_API_BASE_URL;
+}
 
 function setStatus(message, isError = false) {
   el.statusBox.textContent = message;
@@ -214,6 +223,9 @@ el.btnStatus.addEventListener("click", async () => {
 el.btnRun.addEventListener("click", async () => {
   const baseUrl = el.apiBase.value.trim().replace(/\/$/, "");
   const symbols = parseSymbols();
+  const startDate = el.startDate.value.trim();
+  const endDate = el.endDate.value.trim();
+  const interval = el.interval.value.trim();
   const algorithm = el.algorithm.value;
   const maxWeight = parseMaxWeight();
 
@@ -225,13 +237,24 @@ el.btnRun.addEventListener("click", async () => {
     setStatus("Max Weight precisa estar entre 0 e 1.", true);
     return;
   }
+  if (!startDate || !endDate) {
+    setStatus("Informe data inicial e final.", true);
+    return;
+  }
 
   setStatus(`Executando ${algorithm} para ${symbols.join(", ")}...`);
   try {
     const data = await fetchJson(`${baseUrl}/optimize`, {
       method: "POST",
       headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({ algorithm, symbols, max_weight: maxWeight }),
+      body: JSON.stringify({
+        algorithm,
+        symbols,
+        start_date: startDate,
+        end_date: endDate,
+        interval,
+        max_weight: maxWeight,
+      }),
     });
 
     if (algorithm === "all") {
@@ -245,5 +268,109 @@ el.btnRun.addEventListener("click", async () => {
   } catch (error) {
     resetInsights();
     setStatus(`Falha na otimizacao: ${error.message}`, true);
+  }
+});
+
+el.btnExport.addEventListener("click", async () => {
+  const baseUrl = el.apiBase.value.trim().replace(/\/$/, "");
+  const symbols = parseSymbols();
+  const startDate = el.startDate.value.trim();
+  const endDate = el.endDate.value.trim();
+  const interval = el.interval.value.trim();
+  const maxWeight = parseMaxWeight();
+
+  if (symbols.length < 1) {
+    setStatus("Informe pelo menos 1 ativo.", true);
+    return;
+  }
+  if (!startDate || !endDate) {
+    setStatus("Informe data inicial e final.", true);
+    return;
+  }
+  if (maxWeight === null || maxWeight <= 0 || maxWeight > 1) {
+    setStatus("Max Weight precisa estar entre 0 e 1.", true);
+    return;
+  }
+
+  setStatus("Gerando exportacao de resultados...");
+  try {
+    const data = await fetchJson(`${baseUrl}/export`, {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({
+        algorithm: "all",
+        symbols,
+        start_date: startDate,
+        end_date: endDate,
+        interval,
+        max_weight: maxWeight,
+      }),
+    });
+    el.raw.textContent = JSON.stringify(data, null, 2);
+    setStatus("Exportacao concluida.");
+  } catch (error) {
+    setStatus(`Falha na exportacao: ${error.message}`, true);
+  }
+});
+
+el.btnPdf.addEventListener("click", async () => {
+  const baseUrl = el.apiBase.value.trim().replace(/\/$/, "");
+  const symbols = parseSymbols();
+  const startDate = el.startDate.value.trim();
+  const endDate = el.endDate.value.trim();
+  const interval = el.interval.value.trim();
+  const maxWeight = parseMaxWeight();
+
+  if (symbols.length < 1) {
+    setStatus("Informe pelo menos 1 ativo.", true);
+    return;
+  }
+  if (!startDate || !endDate) {
+    setStatus("Informe data inicial e final.", true);
+    return;
+  }
+  if (maxWeight === null || maxWeight <= 0 || maxWeight > 1) {
+    setStatus("Max Weight precisa estar entre 0 e 1.", true);
+    return;
+  }
+
+  setStatus("Gerando PDF do relatorio...");
+  try {
+    const response = await fetch(`${baseUrl}/report/pdf`, {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({
+        algorithm: "all",
+        symbols,
+        start_date: startDate,
+        end_date: endDate,
+        interval,
+        max_weight: maxWeight,
+      }),
+    });
+
+    if (!response.ok) {
+      let errorData = { message: `HTTP ${response.status}` };
+      try {
+        errorData = await response.json();
+      } catch {
+        errorData = { message: await response.text() };
+      }
+      throw new Error(errorData?.message || `HTTP ${response.status}`);
+    }
+
+    const blob = await response.blob();
+    const url = URL.createObjectURL(blob);
+    const link = document.createElement("a");
+    link.href = url;
+    link.download = `relatorio_otimizador_${startDate}_${endDate}.pdf`;
+    document.body.appendChild(link);
+    link.click();
+    link.remove();
+    URL.revokeObjectURL(url);
+
+    setStatus("PDF gerado e download iniciado.");
+  } catch (error) {
+    setStatus(`Falha ao gerar PDF: ${error.message}`, true);
   }
 });

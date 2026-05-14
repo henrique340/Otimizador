@@ -43,6 +43,8 @@ Copie `.env.example` e ajuste se necessário:
 
 - `OTIMIZADOR_SYMBOL` (default: `PETR4.SA`)
 - `OTIMIZADOR_PERIOD` (default: `2y`)
+- `OTIMIZADOR_START_DATE` (opcional, ex: `2015-01-01`)
+- `OTIMIZADOR_END_DATE` (opcional, ex: `2025-12-31`)
 - `OTIMIZADOR_INTERVAL` (default: `1d`)
 - `OTIMIZADOR_CACHE_DIR` (default: `cache`)
 - `OTIMIZADOR_RISK_AVERSION` (default: `0.35`)
@@ -167,11 +169,47 @@ No endpoint `POST /optimize`, envie:
 {
   "algorithm": "linear_programming",
   "symbols": ["PETR4.SA", "VALE3.SA", "ITUB4.SA"],
+  "start_date": "2015-01-01",
+  "end_date": "2025-12-31",
+  "interval": "1d",
   "max_weight": 0.6,
-  "period": "2y",
-  "interval": "1d"
+  "period": "2y"
 }
 ```
+
+### Exportacao de resultados
+
+Endpoint `POST /export` cria artefatos em CSV/JSON para analise:
+- `*_full_report.json`
+- `*_comparison_summary.csv`
+- `*_weights_by_algorithm.csv`
+
+Exemplo de uso:
+
+```json
+{
+  "algorithm": "all",
+  "symbols": ["PETR4.SA", "VALE3.SA", "ITUB4.SA"],
+  "start_date": "2015-01-01",
+  "end_date": "2025-12-31",
+  "interval": "1d",
+  "max_weight": 0.6,
+  "export_dir": "examples/exports"
+}
+```
+
+### Relatorio em PDF com graficos
+
+Com os arquivos de `examples/exports` e `docs/figures` gerados:
+
+```powershell
+$env:PYTHONPATH='src'
+python scripts/generate_pdf_report.py --export-dir examples/exports --figures-dir docs/figures --output docs/reports/relatorio_otimizador_2015_2025.pdf
+```
+
+Ou via API/Frontend:
+- Endpoint `POST /report/pdf` gera o PDF e retorna o arquivo para download.
+- No frontend, use o botao `Gerar PDF`.
 
 ## GitHub Actions (CI/CD)
 
@@ -198,3 +236,30 @@ A role da AWS precisa confiar no provedor OIDC do GitHub e permitir:
 - `s3:PutObject` no bucket de deploy
 - `lambda:update-function-code`
 - `lambda:invokeFunction`
+
+## Graficos para TCC
+
+Script unico para gerar 10 graficos em `docs/figures`:
+
+```bash
+PYTHONPATH=src python scripts/generate_tcc_charts.py --symbols PETR4.SA,VALE3.SA,ITUB4.SA --period 2y --interval 1d
+```
+
+Windows PowerShell:
+
+```powershell
+$env:PYTHONPATH='src'
+python scripts/generate_tcc_charts.py --symbols PETR4.SA,VALE3.SA,ITUB4.SA --start-date 2015-01-01 --end-date 2025-12-31 --interval 1d
+```
+
+Saidas principais:
+- `01_precos_normalizados.png`
+- `02_distribuicao_retornos.png`
+- `03_volatilidade_movel.png`
+- `04_heatmap_correlacao.png`
+- `05_pesos_algoritmos.png`
+- `06_metricas_algoritmos.png`
+- `07_fronteira_risco_retorno.png`
+- `08_convergencia_algoritmos.png`
+- `09_backtest_acumulado.png`
+- `10_drawdown_algoritmos.png`

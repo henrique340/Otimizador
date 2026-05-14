@@ -14,7 +14,13 @@ def _cache_file_path(config: DataConfig) -> Path:
     cache_dir = Path(config.cache_dir)
     cache_dir.mkdir(parents=True, exist_ok=True)
     symbols_key = "__".join(config.symbols).replace(".", "_")
-    filename = f"{symbols_key}_{config.period}_{config.interval}.csv"
+    if config.start_date or config.end_date:
+        start_key = (config.start_date or "none").replace("-", "")
+        end_key = (config.end_date or "none").replace("-", "")
+        window_key = f"{start_key}_{end_key}"
+    else:
+        window_key = config.period
+    filename = f"{symbols_key}_{window_key}_{config.interval}.csv"
     return cache_dir / filename
 
 
@@ -46,16 +52,22 @@ def _download_from_yfinance(config: DataConfig) -> pd.DataFrame:
     """Try different yfinance paths to reduce empty-download failures."""
     symbols = config.symbols
     tickers = " ".join(symbols)
+    date_kwargs: dict[str, str] = {}
+    if config.start_date:
+        date_kwargs["start"] = config.start_date
+    if config.end_date:
+        date_kwargs["end"] = config.end_date
 
     attempts: list[pd.DataFrame | None] = []
     attempts.append(
         yf.download(
             tickers=tickers,
-            period=config.period,
             interval=config.interval,
             auto_adjust=True,
             progress=False,
             threads=False,
+            **({"period": config.period} if not date_kwargs else {}),
+            **date_kwargs,
         )
     )
 
@@ -63,9 +75,10 @@ def _download_from_yfinance(config: DataConfig) -> pd.DataFrame:
     for symbol in symbols:
         try:
             frame_history = yf.Ticker(symbol).history(
-                period=config.period,
                 interval=config.interval,
                 auto_adjust=True,
+                **({"period": config.period} if not date_kwargs else {}),
+                **date_kwargs,
             )
             if frame_history is not None and not frame_history.empty and "Close" in frame_history.columns:
                 series_by_symbol[symbol] = frame_history["Close"]
@@ -83,7 +96,8 @@ def _download_from_yfinance(config: DataConfig) -> pd.DataFrame:
 
     raise ValueError(
         f"Download vazio no yfinance para symbols={symbols}, "
-        f"period={config.period}, interval={config.interval}."
+        f"period={config.period}, start={config.start_date}, "
+        f"end={config.end_date}, interval={config.interval}."
     )
 
 

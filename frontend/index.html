@@ -23,6 +23,21 @@
         </div>
 
         <div class="row">
+          <label for="startDate">Data inicial</label>
+          <input id="startDate" value="2015-01-01" />
+        </div>
+
+        <div class="row">
+          <label for="endDate">Data final</label>
+          <input id="endDate" value="2025-12-31" />
+        </div>
+
+        <div class="row">
+          <label for="interval">Intervalo</label>
+          <input id="interval" value="1d" />
+        </div>
+
+        <div class="row">
           <label for="algorithm">Algoritmo</label>
           <select id="algorithm">
             <option value="linear_programming">Linear Programming</option>
@@ -40,6 +55,8 @@
         <div class="row">
           <button id="btnStatus" type="button">Verificar Status</button>
           <button id="btnRun" type="button">Executar</button>
+          <button id="btnExport" type="button">Exportar</button>
+          <button id="btnPdf" type="button">Gerar PDF</button>
         </div>
 
         <div id="statusBox" class="status">Aguardando acao...</div>
@@ -88,6 +105,6 @@
       </section>
     </main>
 
-    <script src="./app.js"></script>
+    <script src="./app.js?v=2"></script>
   </body>
 </html>

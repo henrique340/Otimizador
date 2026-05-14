@@ -1,0 +1,10 @@
+algorithm,asset,weight
+linear_programming,PETR4.SA,0.10090153403523897
+linear_programming,VALE3.SA,0.29909846596476103
+linear_programming,ITUB4.SA,0.6
+genetic_algorithm,PETR4.SA,0.1007003502655757
+genetic_algorithm,VALE3.SA,0.29929964973442436
+genetic_algorithm,ITUB4.SA,0.6
+simulated_annealing,PETR4.SA,0.35834314691750363
+simulated_annealing,VALE3.SA,0.21854747200394278
+simulated_annealing,ITUB4.SA,0.4231093810785536

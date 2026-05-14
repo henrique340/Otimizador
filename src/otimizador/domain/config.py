@@ -14,6 +14,8 @@ def _parse_symbols(value: str) -> list[str]:
 class DataConfig:
     symbols: list[str] = field(default_factory=lambda: ["PETR4.SA"])
     period: str = "2y"
+    start_date: str | None = None
+    end_date: str | None = None
     interval: str = "1d"
     cache_dir: str = "cache"
 
@@ -50,6 +52,8 @@ def load_config_from_env() -> AppConfig:
         data=DataConfig(
             symbols=symbols,
             period=os.getenv("OTIMIZADOR_PERIOD", "2y"),
+            start_date=os.getenv("OTIMIZADOR_START_DATE"),
+            end_date=os.getenv("OTIMIZADOR_END_DATE"),
             interval=os.getenv("OTIMIZADOR_INTERVAL", "1d"),
             cache_dir=os.getenv("OTIMIZADOR_CACHE_DIR", "cache"),
         ),

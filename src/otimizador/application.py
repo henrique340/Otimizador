@@ -32,6 +32,8 @@ def build_optimization_request(config: AppConfig) -> OptimizationRequest:
         metadata={
             "symbols": config.data.symbols,
             "period": config.data.period,
+            "start_date": config.data.start_date,
+            "end_date": config.data.end_date,
             "interval": config.data.interval,
             "samples": len(features.frame),
             "max_weight": config.optimizer.max_weight,
@@ -43,6 +45,8 @@ def run_full_experiment(
     config: AppConfig | None = None,
     symbols: list[str] | None = None,
     period: str | None = None,
+    start_date: str | None = None,
+    end_date: str | None = None,
     interval: str | None = None,
     max_weight: float | None = None,
 ) -> dict[str, Any]:
@@ -55,6 +59,10 @@ def run_full_experiment(
             data_cfg = replace(data_cfg, symbols=parsed)
     if period:
         data_cfg = replace(data_cfg, period=period)
+    if start_date:
+        data_cfg = replace(data_cfg, start_date=start_date)
+    if end_date:
+        data_cfg = replace(data_cfg, end_date=end_date)
     if interval:
         data_cfg = replace(data_cfg, interval=interval)
 
@@ -93,6 +101,10 @@ def run_full_experiment(
         "symbol": request.symbol,
         "symbols": cfg.data.symbols,
         "objective": "linear_risk_adjusted_return",
+        "period": cfg.data.period,
+        "start_date": cfg.data.start_date,
+        "end_date": cfg.data.end_date,
+        "interval": cfg.data.interval,
         "results": payload_results,
         "comparison": build_comparison_report(results),
     }

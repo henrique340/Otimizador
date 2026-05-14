@@ -1,0 +1,322 @@
+﻿\documentclass[
+  12pt,
+  oneside,
+  a4paper,
+  brazil
+]{abntex2}
+
+\usepackage[T1]{fontenc}
+\usepackage[utf8]{inputenc}
+\usepackage{lmodern}
+\usepackage{indentfirst}
+\usepackage{microtype}
+\usepackage{amsmath}
+\usepackage{array}
+
+\titulo{Técnicas de Otimização Aplicadas à Alocação de Recursos Financeiros em Ativos da B3}
+\autor{Seu Nome}
+\local{Cidade}
+\data{2025}
+\instituicao{%
+  Nome da Instituição
+  \par
+  Curso de Ciência da Computação}
+\tipotrabalho{Trabalho de Conclusão de Curso}
+\preambulo{Trabalho de Conclusão de Curso apresentado ao Curso de Ciência da Computação da Nome da Instituição, como requisito parcial para obtenção do título de Bacharel em Ciência da Computação.}
+
+\begin{document}
+
+\imprimircapa
+
+\begin{resumo}
+A alocação eficiente de recursos financeiros constitui um dos principais desafios das finanças quantitativas modernas, especialmente diante da crescente complexidade dos mercados e da elevada disponibilidade de ativos negociados em bolsas de valores. Nesse contexto, técnicas de otimização vêm sendo amplamente utilizadas para auxiliar investidores e instituições financeiras na construção de carteiras de investimento capazes de maximizar retornos e minimizar riscos.
+
+O presente trabalho tem como objetivo analisar diferentes técnicas de otimização aplicadas à alocação de recursos financeiros em ativos negociados na B3, considerando simultaneamente critérios de retorno esperado, risco, volatilidade e diversificação. A pesquisa fundamenta-se em abordagens clássicas e heurísticas de otimização, incluindo Programação Quadrática, Algoritmos Genéticos e Simulated Annealing.
+
+A metodologia proposta baseia-se na coleta de dados históricos de ações brasileiras por meio da plataforma Yahoo Finance, contemplando ativos representativos do mercado financeiro nacional no período entre 2018 e 2023. Os dados serão tratados por meio do cálculo de retornos logarítmicos e matriz de covariância, permitindo a modelagem matemática do problema de otimização de portfólio.
+
+Como resultados esperados, busca-se identificar vantagens e limitações das técnicas analisadas, bem como avaliar sua aplicabilidade no contexto do mercado financeiro brasileiro. Espera-se ainda demonstrar que métodos heurísticos podem oferecer maior flexibilidade em cenários complexos, enquanto abordagens clássicas apresentam maior estabilidade computacional.
+
+\textbf{Palavras-chave}: otimização de portfólio; algoritmos genéticos; simulated annealing; mercado financeiro; finanças quantitativas.
+\end{resumo}
+
+\begin{resumo}[Abstract]
+\begin{otherlanguage*}{english}
+Efficient financial resource allocation represents one of the main challenges in modern quantitative finance, especially given the increasing complexity of financial markets and the large availability of assets traded on stock exchanges. In this context, optimization techniques have been widely applied to support investors and financial institutions in the construction of investment portfolios capable of maximizing returns while minimizing risks.
+
+This study aims to analyze different optimization techniques applied to the allocation of financial resources in assets traded on B3, simultaneously considering expected return, risk, volatility, and diversification criteria. The research is based on classical and heuristic optimization approaches, including Quadratic Programming, Genetic Algorithms, and Simulated Annealing.
+
+The proposed methodology is based on the collection of historical data from Brazilian stocks through the Yahoo Finance platform, considering representative assets from the Brazilian financial market between 2018 and 2023. The data will be processed through logarithmic return calculations and covariance matrix estimation, enabling the mathematical modeling of the portfolio optimization problem.
+
+As expected results, the study seeks to identify advantages and limitations of the analyzed techniques, as well as evaluate their applicability within the Brazilian financial market context. It is also expected to demonstrate that heuristic methods may provide greater flexibility in complex scenarios, while classical approaches offer greater computational stability.
+
+\textbf{Keywords}: portfolio optimization; genetic algorithms; simulated annealing; financial market; quantitative finance.
+\end{otherlanguage*}
+\end{resumo}
+
+\textual
+
+\chapter{Introdução}
+O mercado financeiro moderno caracteriza-se por um ambiente altamente dinâmico, competitivo e sujeito a constantes oscilações econômicas. Nesse cenário, investidores e instituições financeiras buscam continuamente estratégias capazes de maximizar o retorno de seus investimentos ao mesmo tempo em que minimizam os riscos associados às incertezas do mercado. A crescente complexidade das operações financeiras e o aumento da disponibilidade de dados impulsionaram o desenvolvimento de técnicas quantitativas aplicadas à análise e otimização de carteiras de investimento.
+
+A alocação eficiente de recursos financeiros constitui um dos principais problemas estudados no campo das finanças quantitativas. A construção de um portfólio envolve a distribuição de capital entre diferentes ativos financeiros, considerando fatores como retorno esperado, volatilidade, correlação entre ativos e tolerância ao risco do investidor. Dessa forma, a tomada de decisão relacionada à composição de carteiras torna-se um problema matemático complexo, especialmente em mercados com grande quantidade de ativos e variáveis envolvidas.
+
+Segundo Zhang e Li (2020), a utilização de técnicas modernas de otimização permite explorar padrões complexos nos mercados financeiros, contribuindo para a obtenção de soluções mais eficientes na construção de portfólios. Além disso, Zhou, Li e Zhang (2022) destacam que algoritmos heurísticos apresentam elevado potencial em problemas financeiros caracterizados por múltiplas restrições e grande dimensionalidade.
+
+Tradicionalmente, modelos de otimização financeira utilizam abordagens clássicas baseadas em programação matemática, como a Programação Quadrática. Entretanto, tais métodos podem apresentar limitações em cenários mais complexos, especialmente quando o problema envolve funções não lineares ou grande quantidade de restrições operacionais. Em razão disso, técnicas heurísticas e metaheurísticas passaram a ser amplamente exploradas no contexto financeiro.
+
+Entre as principais abordagens heurísticas aplicadas à otimização de portfólios destacam-se os Algoritmos Genéticos e o Simulated Annealing. Essas técnicas possuem capacidade de explorar espaços de busca complexos e escapar de mínimos locais, tornando-se alternativas relevantes em problemas de otimização multiobjetivo.
+
+Diante desse contexto, o presente trabalho propõe a análise de diferentes técnicas de otimização aplicadas à alocação de recursos financeiros em ativos negociados na B3, buscando comparar suas características, vantagens, limitações e aplicabilidade prática no mercado financeiro brasileiro.
+
+O objetivo geral deste estudo consiste em analisar e comparar técnicas de otimização aplicadas à construção de carteiras de investimento utilizando ativos negociados na B3.
+
+Como objetivos específicos, busca-se:
+\begin{itemize}
+  \item coletar e tratar dados históricos de ações brasileiras;
+  \item modelar matematicamente o problema de otimização de portfólio;
+  \item implementar algoritmos clássicos e heurísticos;
+  \item comparar os métodos utilizando métricas financeiras;
+  \item analisar o desempenho das carteiras geradas.
+\end{itemize}
+
+A relevância deste trabalho justifica-se pela crescente importância da análise quantitativa no mercado financeiro e pela necessidade de desenvolvimento de estratégias mais eficientes de alocação de recursos. Além disso, a pesquisa contribui para o entendimento da aplicação de técnicas computacionais modernas em problemas financeiros reais.
+
+Este trabalho está estruturado em cinco capítulos principais. Inicialmente, apresenta-se o referencial teórico relacionado à teoria moderna do portfólio e às técnicas de otimização estudadas. Em seguida, descreve-se a metodologia adotada, incluindo coleta de dados, modelagem matemática e métricas de avaliação. Por fim, é apresentado o cronograma de desenvolvimento da pesquisa.
+
+\chapter{Referencial Te?rico}
+\section{Mercado Financeiro e Carteiras de Investimento}
+O mercado financeiro ? respons?vel pela intermedia??o de recursos entre agentes superavit?rios e deficit?rios, viabilizando a forma??o de poupan?a, financiamento de empresas e aloca??o de capital em diferentes classes de ativos. No contexto acion?rio, a decis?o de investimento envolve a escolha de ativos com perfis distintos de retorno, risco, liquidez e sensibilidade a fatores macroecon?micos.
+
+No caso brasileiro, a B3 re?ne empresas de diferentes setores e n?veis de maturidade, criando um ambiente heterog?neo para o investidor. Essa heterogeneidade, embora amplie as oportunidades de diversifica??o, tamb?m aumenta a complexidade anal?tica do processo de sele??o de ativos. Dessa forma, a simples escolha baseada em desempenho passado n?o ? suficiente para compor carteiras robustas no longo prazo.
+
+Uma carteira de investimentos pode ser definida como um vetor de pesos aplicado sobre um conjunto de ativos, no qual cada peso representa a propor??o do capital alocada em um ativo espec?fico. A qualidade dessa carteira depende da rela??o conjunta entre retorno esperado e risco assumido. Conforme discutem Gu, Kelly e Xiu (2020), decis?es de aloca??o mais eficientes exigem tratamento estat?stico adequado dos dados hist?ricos e modelagem quantitativa consistente.
+
+\subsection{Rela??o Risco-Retorno}
+A literatura de finan?as estabelece que retornos mais elevados geralmente est?o associados a maior incerteza. Em termos operacionais, essa incerteza ? frequentemente mensurada pela volatilidade dos retornos e pela covari?ncia entre ativos. Assim, duas carteiras com o mesmo retorno esperado podem apresentar riscos diferentes, dependendo de como os ativos se relacionam entre si.
+
+No problema de aloca??o, n?o basta observar o risco individual de cada ativo; ? necess?rio considerar tamb?m o risco conjunto do portf?lio. Esse ponto justifica o uso de modelos baseados em matriz de covari?ncia, pois a contribui??o de risco de cada ativo depende simultaneamente de seu peso e de sua correla??o com os demais componentes da carteira.
+
+\subsection{Diversifica??o e Efici?ncia}
+A diversifica??o ? um princ?pio central da gest?o de carteiras. Ao combinar ativos com comportamentos parcialmente descorrelacionados, ? poss?vel reduzir o risco total sem, necessariamente, reduzir o retorno esperado na mesma propor??o. Em termos matem?ticos, essa propriedade aparece na estrutura quadr?tica do risco da carteira.
+
+Contudo, diversificar n?o significa distribuir capital de forma uniforme em todos os ativos. A diversifica??o eficiente depende de otimiza??o sob restri??es, considerando limites de aloca??o, avers?o ao risco e crit?rios de viabilidade pr?tica. Por isso, t?cnicas de otimiza??o s?o fundamentais para transformar o princ?pio de diversifica??o em estrat?gia aplic?vel.
+
+\section{Teoria Moderna do Portf?lio}
+A Teoria Moderna do Portf?lio (TMP), consolidada por Markowitz, formaliza a constru??o de carteiras eficientes por meio da otimiza??o conjunta de retorno e risco. Embora o modelo cl?ssico seja amplamente conhecido, sua l?gica permanece atual em aplica??es contempor?neas, inclusive quando combinada com m?todos heur?sticos.
+
+Seja $w$ o vetor de pesos dos ativos, $\mu$ o vetor de retornos esperados e $\Sigma$ a matriz de covari?ncia. O retorno esperado da carteira ? dado por:
+\[
+E(R_p)=w^T\mu
+\]
+
+e a vari?ncia da carteira por:
+\[
+\sigma_p^2=w^T\Sigma w
+\]
+
+A partir dessas express?es, pode-se formular problemas de minimiza??o de risco para um retorno alvo, ou de maximiza??o de retorno para um n?vel de risco aceit?vel.
+
+\subsection{Fronteira Eficiente}
+A fronteira eficiente representa o conjunto de carteiras n?o dominadas no plano risco-retorno. Uma carteira ? eficiente quando n?o existe outra carteira que ofere?a maior retorno para o mesmo risco, ou menor risco para o mesmo retorno. Esse conceito ? central para compara??o entre estrat?gias de otimiza??o.
+
+Na pr?tica, a fronteira eficiente serve como refer?ncia para avaliar se um algoritmo est? gerando solu??es competitivas. M?todos diferentes podem atingir regi?es distintas da fronteira, com varia??es em estabilidade num?rica, tempo de execu??o e ader?ncia a restri??es operacionais.
+
+\subsection{Limita??es do Modelo Cl?ssico}
+Apesar de sua relev?ncia, o modelo cl?ssico apresenta limita??es importantes: sensibilidade a estimativas de retorno, depend?ncia de hip?teses estat?sticas fortes e dificuldade para lidar com restri??es n?o lineares complexas. Essas limita??es estimulam o uso de abordagens heur?sticas e metaheur?sticas, especialmente em cen?rios de alta dimensionalidade e incerteza elevada.
+
+Kumar e Singh (2022) destacam que modelos multiobjetivo e t?cnicas evolutivas ampliam a capacidade de busca por solu??es eficientes quando o espa?o de decis?o se torna mais complexo. Assim, a TMP permanece como base conceitual, mas frequentemente ? complementada por algoritmos mais flex?veis.
+
+\section{T?cnicas de Otimiza??o Aplicadas a Portf?lios}
+As t?cnicas de otimiza??o em finan?as podem ser divididas, de forma geral, em m?todos determin?sticos e m?todos heur?sticos. M?todos determin?sticos tendem a ter maior previsibilidade e converg?ncia controlada sob hip?teses bem definidas. M?todos heur?sticos, por sua vez, priorizam flexibilidade de busca e adapta??o a superf?cies de solu??o irregulares.
+
+\subsection{Programa??o Quadr?tica}
+A Programa??o Quadr?tica (PQ) modela o problema de aloca??o considerando uma fun??o objetivo quadr?tica e restri??es lineares. A formula??o t?pica de utilidade risco-retorno ?:
+\[
+\max \left(\mu^T w - \lambda w^T\Sigma w\right)
+\]
+
+sujeita a:
+\[
+\sum_{i=1}^{n}w_i=1, \quad w_i\geq 0
+\]
+
+em que $\lambda$ representa o par?metro de avers?o ao risco. Quanto maior o valor de $\lambda$, maior a penaliza??o da volatilidade da carteira.
+
+Entre as vantagens da PQ destacam-se: efici?ncia computacional, interpreta??o econ?mica clara e boa estabilidade em problemas convexos. Entre as limita??es, destacam-se menor flexibilidade para restri??es n?o convencionais e sensibilidade a par?metros estimados com ru?do.
+
+\subsection{Algoritmos Gen?ticos}
+Os Algoritmos Gen?ticos (AG) s?o inspirados em processos evolutivos e operam sobre uma popula??o de solu??es candidatas. Em cada gera??o, indiv?duos com melhor aptid?o t?m maior probabilidade de reprodu??o, enquanto operadores de cruzamento e muta??o promovem explora??o do espa?o de busca.
+
+No contexto de portf?lios, cada indiv?duo pode representar um vetor de pesos, normalizado para respeitar restri??es de or?amento e n?o negatividade. A fun??o de aptid?o geralmente combina retorno esperado e penaliza??o de risco, em linha com a fun??o objetivo do problema.
+
+De acordo com Bai, Liu e Wang (2020), AG apresenta bom desempenho em problemas com m?ltiplas restri??es e superf?cies de busca n?o lineares. Contudo, seu desempenho depende da calibra??o de hiperpar?metros, como tamanho da popula??o, taxa de muta??o e n?mero de gera??es.
+
+\subsection{Simulated Annealing}
+O Simulated Annealing (SA) ? um m?todo probabil?stico baseado no processo de recozimento t?rmico. A estrat?gia consiste em aceitar, com certa probabilidade, solu??es temporariamente piores para evitar aprisionamento em ?timos locais. Essa probabilidade decresce ao longo das itera??es segundo um cronograma de resfriamento.
+
+No problema de aloca??o de ativos, o SA parte de um vetor de pesos inicial e executa perturba??es controladas, avaliando a qualidade de cada nova solu??o por meio da fun??o objetivo risco-retorno. A aceita??o de movimentos de piora no in?cio da busca amplia explora??o global; no fim da busca, a redu??o da temperatura favorece refinamento local.
+
+Conforme Li e Wang (2020), o SA ? especialmente ?til quando o espa?o de decis?o cont?m m?ltiplas regi?es de atratividade e descontinuidades pr?ticas de modelagem. Sua principal desvantagem ? o poss?vel aumento de custo computacional, dependendo do n?mero de itera??es e da estrat?gia de resfriamento.
+
+\section{M?tricas Financeiras para Avalia??o de Portf?lios}
+A compara??o entre algoritmos exige um conjunto de m?tricas capazes de capturar retorno, risco e efici?ncia operacional. Neste trabalho, s?o consideradas as seguintes m?tricas principais:
+\begin{itemize}
+  \item \textbf{Retorno esperado}: m?dia dos retornos estimados da carteira.
+  \item \textbf{Volatilidade}: desvio padr?o dos retornos da carteira, utilizado como proxy de risco.
+  \item \textbf{?ndice de Sharpe}: raz?o entre retorno e volatilidade, indicando retorno ajustado ao risco.
+  \item \textbf{Drawdown}: perda acumulada m?xima a partir de um pico, ?til para avalia??o de risco de queda.
+  \item \textbf{Tempo computacional}: custo de processamento para obten??o da solu??o.
+\end{itemize}
+
+Al?m dessas m?tricas, a an?lise de contribui??o de risco por ativo permite interpretar como cada posi??o impacta o risco agregado da carteira. Essa interpreta??o ? relevante para decis?es de rebalanceamento e controle de concentra??o.
+
+\section{Trabalhos Relacionados}
+A literatura recente aponta crescimento consistente do uso de intelig?ncia computacional em finan?as quantitativas. Zhang e Li (2020) apresentam uma revis?o sobre integra??o entre aprendizado de m?quina e otimiza??o de portf?lios, destacando ganhos de desempenho em cen?rios complexos.
+
+Heaton, Polson e Witte (2020) discutem aplica??es de deep learning em constru??o de portf?lios din?micos, evidenciando que modelos avan?ados podem capturar n?o linearidades relevantes da din?mica de mercado. Em paralelo, Zhou, Li e Zhang (2022) mostram que metaheur?sticas mant?m competitividade quando comparadas a m?todos tradicionais sob m?ltiplas restri??es.
+
+Apesar dos avan?os, ainda h? lacunas para mercados emergentes, sobretudo quanto ? valida??o emp?rica com ativos locais e restri??es realistas de aloca??o. Nesse sentido, o mercado brasileiro oferece contexto apropriado para avalia??o comparativa de t?cnicas cl?ssicas e heur?sticas.
+
+\chapter{Metodologia}
+\section{Caracteriza??o da Pesquisa}
+Esta pesquisa possui natureza aplicada, com abordagem quantitativa e objetivo comparativo-experimental. O foco est? em avaliar o desempenho de tr?s t?cnicas de otimiza??o na constru??o de carteiras com ativos negociados na B3, utilizando crit?rios padronizados de entrada, fun??o objetivo e m?tricas de sa?da.
+
+A estrat?gia metodol?gica combina etapas de engenharia de dados, modelagem matem?tica, implementa??o computacional e an?lise de resultados. O desenho experimental foi estruturado para garantir reprodutibilidade, modularidade do c?digo e comparabilidade entre algoritmos.
+
+\section{Base de Dados e Crit?rios de Sele??o}
+Os dados hist?ricos de pre?os s?o obtidos por meio da plataforma Yahoo Finance, com horizonte temporal de 2018 a 2023. A sele??o de ativos considera crit?rios de liquidez, representatividade setorial e presen?a recorrente entre pap?is de maior negocia??o no mercado brasileiro.
+
+Os dados brutos s?o coletados em frequ?ncia di?ria e armazenados com mecanismo de cache local em formato CSV, permitindo fallback em situa??es de indisponibilidade tempor?ria da API. Esse procedimento aumenta estabilidade operacional do experimento e reduz impacto de limita??es de taxa de consulta.
+
+\subsection{Ativos e Janela Temporal}
+A janela temporal ? definida para capturar diferentes regimes de mercado, incluindo per?odos de maior e menor volatilidade. Isso permite analisar a robustez dos algoritmos em cen?rios variados, evitando conclus?es baseadas apenas em intervalos de baixa variabilidade.
+
+A composi??o final de ativos pode ser ajustada conforme objetivo da an?lise, preservando-se o mesmo protocolo de pr?-processamento e compara??o para todos os m?todos.
+
+\section{Pr?-processamento dos Dados}
+Ap?s coleta, os dados passam por verifica??o de consist?ncia, remo??o de registros inv?lidos e alinhamento temporal entre ativos. Em seguida, s?o calculados retornos logar?tmicos di?rios:
+\[
+r_t = \ln\left(\frac{P_t}{P_{t-1}}\right)
+\]
+
+A escolha por retornos logar?tmicos se justifica por propriedades estat?sticas ?teis em modelagem financeira, como aditividade temporal aproximada e melhor comportamento em s?ries de pre?os multiplicativas.
+
+\subsection{Estimativas Estat?sticas}
+Com base nos retornos, s?o estimados:
+\begin{itemize}
+  \item vetor de retornos esperados ($\mu$);
+  \item vetor de volatilidades individuais;
+  \item matriz de covari?ncia ($\Sigma$).
+\end{itemize}
+
+Essas estimativas alimentam a fun??o objetivo comum dos tr?s algoritmos, garantindo comparabilidade metodol?gica. Sempre que necess?rio, s?o aplicados tratamentos num?ricos para evitar instabilidades, como regulariza??o de valores muito pr?ximos de zero.
+
+\section{Modelagem Matem?tica do Problema}
+O problema de aloca??o ? formulado como otimiza??o de retorno ajustado ao risco:
+\[
+\max f(w)=\mu^T w-\lambda\sqrt{w^T\Sigma w}
+\]
+
+sujeito a:
+\[
+\sum_{i=1}^{n}w_i=1, \quad w_i\geq 0, \quad w_i\leq w_{max}
+\]
+
+em que $w_{max}$ limita concentra??o excessiva em um ?nico ativo e $\lambda$ controla avers?o ao risco. Essa formula??o ? aplicada de forma id?ntica para Programa??o Quadr?tica, Algoritmo Gen?tico e Simulated Annealing.
+
+\subsection{Padroniza??o Experimental}
+Para evitar vi?s de compara??o, os algoritmos compartilham:
+\begin{itemize}
+  \item o mesmo conjunto de ativos e janela temporal;
+  \item a mesma fun??o objetivo;
+  \item as mesmas restri??es de aloca??o;
+  \item o mesmo formato de sa?da com m?tricas padronizadas.
+\end{itemize}
+
+Essa padroniza??o permite atribuir diferen?as de desempenho ao comportamento do algoritmo, e n?o a diferen?as de entrada ou de defini??o do problema.
+
+\section{Implementa??o dos Algoritmos}
+Foram implementados tr?s m?todos: Programa??o Quadr?tica, Algoritmo Gen?tico e Simulated Annealing. A implementa??o foi realizada em Python, com foco em simplicidade, reprodutibilidade e possibilidade de execu??o local ou em nuvem.
+
+\subsection{Programa??o Quadr?tica}
+A abordagem determin?stica busca solu??es de alta estabilidade, respeitando restri??es do problema e fornecendo baseline anal?tico para compara??o com m?todos heur?sticos.
+
+\subsection{Algoritmo Gen?tico}
+A abordagem evolutiva utiliza popula??o inicial, sele??o por aptid?o, cruzamento e muta??o, com normaliza??o dos pesos a cada itera??o para preserva??o das restri??es de viabilidade.
+
+\subsection{Simulated Annealing}
+A abordagem probabil?stica executa perturba??es graduais nos pesos e aceita solu??es de piora de forma controlada por temperatura, favorecendo escape de ?timos locais e refinamento progressivo.
+
+\section{M?tricas de Avalia??o e Compara??o}
+A avalia??o dos algoritmos utiliza m?tricas financeiras e computacionais:
+\begin{itemize}
+  \item valor da fun??o objetivo;
+  \item retorno esperado da carteira;
+  \item volatilidade do portf?lio;
+  \item ?ndice de Sharpe;
+  \item drawdown m?ximo;
+  \item tempo de execu??o em milissegundos.
+\end{itemize}
+
+Tamb?m ? analisada a distribui??o de pesos e a contribui??o percentual de risco por ativo, para verificar concentra??o e coer?ncia econ?mica das solu??es.
+
+\subsection{Ranking de Desempenho}
+Com base nas m?tricas, ? gerado um ranking comparativo entre os tr?s m?todos. O crit?rio principal prioriza fun??o objetivo e desempenho ajustado ao risco, sem desconsiderar custo computacional. Essa vis?o multicrit?rio evita conclus?es simplificadas baseadas em apenas uma m?trica.
+
+\section{Backtesting e Valida??o}
+Al?m da avalia??o in-sample, realiza-se backtesting das carteiras para observar evolu??o acumulada de desempenho e comportamento em per?odos de estresse. Essa etapa complementa a an?lise est?tica e aproxima os resultados de um cen?rio de aplica??o real.
+
+Para refor?ar a validade dos resultados, recomenda-se execu??o com m?ltiplos conjuntos de ativos e an?lise de sensibilidade dos hiperpar?metros dos m?todos heur?sticos.
+
+\section{Procedimentos de Reprodutibilidade}
+A arquitetura do projeto foi dividida em m?dulos de ingest?o, engenharia de atributos, algoritmos, avalia??o e infraestrutura. Essa separa??o facilita auditoria, testes e evolu??o incremental do trabalho.
+
+A execu??o local pode ser reproduzida por scripts padronizados e vari?veis de ambiente. Para escalabilidade, o projeto foi estruturado para integra??o com AWS Lambda e pipeline de CI/CD, preservando a l?gica principal fora dos handlers de infraestrutura.
+
+Essa estrat?gia metodol?gica garante rastreabilidade entre dados de entrada, par?metros de execu??o e resultados finais, aspecto essencial para robustez acad?mica do estudo.
+\chapter{Cronograma}
+\begin{center}
+\renewcommand{\arraystretch}{1.3}
+\begin{tabular}{|p{6.5cm}|c|c|c|c|c|c|}
+\hline
+\textbf{Atividades} & \textbf{Jan} & \textbf{Fev} & \textbf{Mar} & \textbf{Abr} & \textbf{Mai} & \textbf{Jun} \\
+\hline
+Levantamento bibliográfico & X & X &  &  &  &  \\
+\hline
+Escrita do referencial teórico &  & X & X &  &  &  \\
+\hline
+Coleta e tratamento dos dados &  &  & X & X &  &  \\
+\hline
+Implementação dos algoritmos &  &  &  & X & X &  \\
+\hline
+Análise dos resultados &  &  &  &  & X & X \\
+\hline
+Escrita final &  &  &  &  & X & X \\
+\hline
+Revisão &  &  &  &  &  & X \\
+\hline
+Entrega &  &  &  &  &  & X \\
+\hline
+\end{tabular}
+\end{center}
+
+\postextual
+\chapter*{Referências}
+\addcontentsline{toc}{chapter}{Referências}
+
+BAI, X.; LIU, J.; WANG, Y. A hybrid genetic algorithm for portfolio optimization. \textit{Expert Systems with Applications}, v. 161, 2020.
+
+GU, S.; KELLY, B.; XIU, D. Empirical asset pricing via machine learning. \textit{The Review of Financial Studies}, v. 33, n. 5, p. 2223--2273, 2020.
+
+HEATON, J.; POLSON, N.; WITTE, J. Deep learning for finance: deep portfolios. \textit{Applied Stochastic Models in Business and Industry}, v. 36, n. 1, p. 3--12, 2020.
+
+KUMAR, R.; SINGH, S. Multi-objective portfolio optimization using evolutionary algorithms. \textit{Computers \& Operations Research}, v. 140, 2022.
+
+LI, Y.; WANG, S. Simulated annealing-based portfolio optimization under uncertainty. \textit{Applied Soft Computing}, v. 95, 2020.
+
+ZHANG, Y.; LI, X. Portfolio optimization using machine learning: A review. \textit{IEEE Access}, v. 8, p. 203960--203976, 2020.
+
+ZHOU, Y.; LI, H.; ZHANG, J. Metaheuristic approaches for portfolio optimization: A systematic review. \textit{Swarm and Evolutionary Computation}, v. 68, 2022.
+
+\end{document}
