@@ -64,10 +64,17 @@ jobs:
       - name: Build Lambda package
         run: |
           set -euo pipefail
-          python -m pip install --upgrade pip
           rm -rf dist/lambda_package
           mkdir -p dist/lambda_package
-          pip install -r requirements.txt -t dist/lambda_package
+
+          # Build dependencies inside the official Lambda Python 3.11 image
+          # to avoid GLIBC/ABI incompatibilities (numpy/pandas).
+          docker run --rm \
+            -v "$PWD":/var/task \
+            -w /var/task \
+            public.ecr.aws/lambda/python:3.11 \
+            /bin/bash -lc "pip install --no-cache-dir -r requirements.txt -t dist/lambda_package"
+
           cp -r src/otimizador dist/lambda_package/
           echo "Package folder size:"
           du -sh dist/lambda_package
