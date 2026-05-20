@@ -72,8 +72,9 @@ jobs:
           docker run --rm \
             -v "$PWD":/var/task \
             -w /var/task \
+            --entrypoint /bin/bash \
             public.ecr.aws/lambda/python:3.11 \
-            /bin/bash -lc "pip install --no-cache-dir -r requirements.txt -t dist/lambda_package"
+            -lc "pip install --no-cache-dir -r requirements.txt -t dist/lambda_package"
 
           cp -r src/otimizador dist/lambda_package/
           echo "Package folder size:"
