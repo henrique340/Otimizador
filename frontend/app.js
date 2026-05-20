@@ -212,7 +212,13 @@ el.btnStatus.addEventListener("click", async () => {
   const baseUrl = el.apiBase.value.trim().replace(/\/$/, "");
   setStatus("Checando status da API...");
   try {
-    const data = await fetchJson(`${baseUrl}/status`, { method: "GET" });
+    let data;
+    try {
+      data = await fetchJson(`${baseUrl}/status`, { method: "GET" });
+    } catch {
+      // Fallback para APIs que expõem apenas /status/{execution_id}
+      data = await fetchJson(`${baseUrl}/status/ping`, { method: "GET" });
+    }
     setStatus(`API online: ${data.status}`);
     el.raw.textContent = JSON.stringify(data, null, 2);
   } catch (error) {
