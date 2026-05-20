@@ -76,6 +76,13 @@ jobs:
           rm -rf dist/lambda_package
           mkdir -p dist/lambda_package
 
+          if [ "${{ matrix.lambda_name }}" = "quantvision-report-pdf-handler" ]; then
+            REQ_FILE="requirements-lambda-pdf.txt"
+          else
+            REQ_FILE="requirements-lambda-common.txt"
+          fi
+          echo "Using requirements file: $REQ_FILE"
+
           # Build dependencies inside the official Lambda Python 3.11 image
           # to avoid GLIBC/ABI incompatibilities (numpy/pandas).
           docker run --rm \
@@ -83,10 +90,22 @@ jobs:
             -w /var/task \
             --entrypoint /bin/bash \
             public.ecr.aws/lambda/python:3.11 \
-            -lc "pip install --no-cache-dir -r requirements.txt -t dist/lambda_package"
+            -lc "pip install --no-cache-dir --only-binary=:all: -r $REQ_FILE -t dist/lambda_package"
 
           cp -r src/otimizador dist/lambda_package/
-          cp -r scripts dist/lambda_package/
+          if [ "${{ matrix.lambda_name }}" = "quantvision-report-pdf-handler" ]; then
+            mkdir -p dist/lambda_package/scripts
+            cp scripts/generate_tcc_charts.py dist/lambda_package/scripts/
+          fi
+
+          # Remove arquivos desnecessarios para reduzir tamanho do zip.
+          find dist/lambda_package -type d \( -name "__pycache__" -o -name "tests" -o -name "testing" \) -prune -exec rm -rf {} +
+          find dist/lambda_package -type f \( -name "*.pyc" -o -name "*.pyo" \) -delete
+          rm -rf dist/lambda_package/numpy/tests || true
+          rm -rf dist/lambda_package/pandas/tests || true
+          rm -rf dist/lambda_package/matplotlib/tests || true
+          rm -rf dist/lambda_package/mpl_toolkits/tests || true
+
           echo "Package folder size:"
           du -sh dist/lambda_package
           cd dist/lambda_package

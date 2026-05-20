@@ -1,0 +1,4 @@
+-r requirements-lambda-common.txt
+reportlab>=4.0
+matplotlib==3.8.4
+contourpy==1.2.1
