@@ -63,6 +63,34 @@ function formatPct(value, digits = 2) {
   return `${(value * 100).toFixed(digits)}%`;
 }
 
+function downloadBlob(filename, blob) {
+  const url = URL.createObjectURL(blob);
+  const link = document.createElement("a");
+  link.href = url;
+  link.download = filename;
+  document.body.appendChild(link);
+  link.click();
+  link.remove();
+  URL.revokeObjectURL(url);
+}
+
+function toCsv(rows) {
+  if (!rows.length) return "";
+  const headers = Object.keys(rows[0]);
+  const escape = (value) => {
+    const text = String(value ?? "");
+    if (text.includes(",") || text.includes("\"") || text.includes("\n")) {
+      return `"${text.replaceAll("\"", "\"\"")}"`;
+    }
+    return text;
+  };
+  const lines = [
+    headers.join(","),
+    ...rows.map((row) => headers.map((h) => escape(row[h])).join(",")),
+  ];
+  return lines.join("\n");
+}
+
 function resetInsights() {
   el.insightRiskAsset.textContent = "-";
   el.insightMinRiskAsset.textContent = "-";
@@ -310,10 +338,48 @@ el.btnExport.addEventListener("click", async () => {
         end_date: endDate,
         interval,
         max_weight: maxWeight,
+        export_results: true,
+        export_dir: "/tmp/exports",
       }),
     });
+
+    // Fallback de exportacao no cliente para garantir CSV mesmo quando
+    // a API AWS usa /tmp (nao acessivel externamente).
+    const summaryRows =
+      data?.comparison?.summary?.map((item) => ({
+        algorithm: item.algorithm,
+        objective_value: item.objective_value,
+        expected_return: item.expected_return,
+        elapsed_ms: item.elapsed_ms,
+        portfolio_volatility: item.portfolio_volatility,
+        sharpe_ratio: item.sharpe_ratio,
+      })) || [];
+    const weightsRows =
+      data?.results?.flatMap((result) =>
+        Object.entries(result?.weights || {}).map(([asset, weight]) => ({
+          algorithm: result.algorithm,
+          asset,
+          weight,
+        })),
+      ) || [];
+
+    if (summaryRows.length) {
+      const summaryCsv = toCsv(summaryRows);
+      downloadBlob(
+        `comparison_summary_${startDate}_${endDate}.csv`,
+        new Blob([summaryCsv], { type: "text/csv;charset=utf-8" }),
+      );
+    }
+    if (weightsRows.length) {
+      const weightsCsv = toCsv(weightsRows);
+      downloadBlob(
+        `weights_by_algorithm_${startDate}_${endDate}.csv`,
+        new Blob([weightsCsv], { type: "text/csv;charset=utf-8" }),
+      );
+    }
+
     el.raw.textContent = JSON.stringify(data, null, 2);
-    setStatus("Exportacao concluida.");
+    setStatus("Exportacao concluida. CSV(s) baixado(s).");
   } catch (error) {
     setStatus(`Falha na exportacao: ${error.message}`, true);
   }
@@ -365,15 +431,30 @@ el.btnPdf.addEventListener("click", async () => {
       throw new Error(errorData?.message || `HTTP ${response.status}`);
     }
 
-    const blob = await response.blob();
-    const url = URL.createObjectURL(blob);
-    const link = document.createElement("a");
-    link.href = url;
-    link.download = `relatorio_otimizador_${startDate}_${endDate}.pdf`;
-    document.body.appendChild(link);
-    link.click();
-    link.remove();
-    URL.revokeObjectURL(url);
+    const contentType = response.headers.get("content-type") || "";
+    if (contentType.includes("application/pdf")) {
+      const blob = await response.blob();
+      downloadBlob(
+        `relatorio_otimizador_${startDate}_${endDate}.pdf`,
+        blob,
+      );
+    } else {
+      const data = await response.json();
+      if (!data?.pdf_base64) {
+        throw new Error("Resposta nao contem pdf_base64.");
+      }
+      const binary = atob(data.pdf_base64);
+      const bytes = new Uint8Array(binary.length);
+      for (let i = 0; i < binary.length; i += 1) {
+        bytes[i] = binary.charCodeAt(i);
+      }
+      const blob = new Blob([bytes], { type: "application/pdf" });
+      downloadBlob(
+        data.filename || `relatorio_otimizador_${startDate}_${endDate}.pdf`,
+        blob,
+      );
+      el.raw.textContent = JSON.stringify(data, null, 2);
+    }
 
     setStatus("PDF gerado e download iniciado.");
   } catch (error) {
