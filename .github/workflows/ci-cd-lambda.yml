@@ -40,11 +40,19 @@ jobs:
         run: python -m pytest -q
 
   deploy-dev:
-    name: Deploy Lambda (dev)
+    name: Deploy Lambdas (dev)
     runs-on: ubuntu-latest
     needs: ci
     if: github.event_name == 'push' && github.ref == 'refs/heads/main'
     environment: dev
+    strategy:
+      fail-fast: false
+      matrix:
+        lambda_name:
+          - quantvision-data-handler
+          - quantvision-optimize-handler
+          - quantvision-report-handler
+          - quantvision-status-handler
 
     steps:
       - name: Checkout
@@ -87,7 +95,7 @@ jobs:
       - name: Upload package to S3
         run: |
           set -euo pipefail
-          PACKAGE_KEY="lambda/${{ github.repository }}/${{ github.sha }}/otimizador-lambda.zip"
+          PACKAGE_KEY="lambda/${{ github.repository }}/${{ github.sha }}/${{ matrix.lambda_name }}/otimizador-lambda.zip"
           echo "PACKAGE_KEY=$PACKAGE_KEY" >> "$GITHUB_ENV"
           aws s3 cp dist/otimizador-lambda.zip \
             "s3://${{ vars.LAMBDA_DEPLOY_BUCKET }}/$PACKAGE_KEY" \
@@ -97,7 +105,7 @@ jobs:
         run: |
           set -euo pipefail
           aws lambda update-function-code \
-            --function-name "${{ vars.LAMBDA_FUNCTION_NAME }}" \
+            --function-name "${{ matrix.lambda_name }}" \
             --s3-bucket "${{ vars.LAMBDA_DEPLOY_BUCKET }}" \
             --s3-key "${PACKAGE_KEY}" \
             --region "${{ vars.AWS_REGION }}"
@@ -105,9 +113,9 @@ jobs:
       - name: Smoke invoke Lambda
         run: |
           aws lambda invoke \
-            --function-name "${{ vars.LAMBDA_FUNCTION_NAME }}" \
+            --function-name "${{ matrix.lambda_name }}" \
             --payload '{}' \
             --cli-binary-format raw-in-base64-out \
             --region "${{ vars.AWS_REGION }}" \
-            smoke-response.json
-          cat smoke-response.json
+            "smoke-${{ matrix.lambda_name }}.json"
+          cat "smoke-${{ matrix.lambda_name }}.json"
