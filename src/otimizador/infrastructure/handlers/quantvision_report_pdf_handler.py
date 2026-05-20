@@ -5,6 +5,8 @@ from __future__ import annotations
 import base64
 import json
 import os
+import subprocess
+import sys
 from pathlib import Path
 
 from otimizador.application import run_full_experiment
@@ -45,8 +47,56 @@ def lambda_handler(event, context):  # noqa: ARG001
         export_dir = payload.get("export_dir", "/tmp/exports")
         figures_dir = payload.get("figures_dir", "/tmp/figures")
         output_pdf = payload.get("output_pdf", "/tmp/relatorio_otimizador.pdf")
+        regenerate_charts = payload.get("regenerate_charts", True)
 
         export_experiment_results(report=result, output_dir=export_dir)
+
+        if regenerate_charts:
+            project_root = Path("/var/task")
+            figures_path = Path(figures_dir)
+            figures_path.mkdir(parents=True, exist_ok=True)
+            script_path = project_root / "scripts" / "generate_tcc_charts.py"
+            if not script_path.exists():
+                raise FileNotFoundError(
+                    "Script de graficos nao encontrado no pacote da Lambda: "
+                    f"{script_path}"
+                )
+
+            cmd = [
+                sys.executable,
+                str(script_path),
+                "--output-dir",
+                figures_dir,
+            ]
+            if payload.get("symbols"):
+                cmd.extend(["--symbols", ",".join(payload["symbols"])])
+            if payload.get("period"):
+                cmd.extend(["--period", payload["period"]])
+            if payload.get("start_date"):
+                cmd.extend(["--start-date", payload["start_date"]])
+            if payload.get("end_date"):
+                cmd.extend(["--end-date", payload["end_date"]])
+            if payload.get("interval"):
+                cmd.extend(["--interval", payload["interval"]])
+            if payload.get("max_weight") is not None:
+                cmd.extend(["--max-weight", str(payload["max_weight"])])
+
+            chart_run = subprocess.run(
+                cmd,
+                check=False,
+                cwd=str(project_root),
+                capture_output=True,
+                text=True,
+            )
+            if chart_run.returncode != 0:
+                has_existing_charts = any(figures_path.glob("*.png"))
+                if not has_existing_charts:
+                    detail = chart_run.stderr.strip() or chart_run.stdout.strip()
+                    raise RuntimeError(
+                        "Falha ao gerar graficos para o relatorio PDF. "
+                        f"Detalhes: {detail}"
+                    )
+
         pdf_path = generate_pdf_report(
             export_dir=export_dir,
             figures_dir=figures_dir,

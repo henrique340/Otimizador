@@ -86,7 +86,10 @@ def test_report_pdf_handler_returns_base64(mocker, tmp_path):
         return_value=fake_pdf,
     )
 
-    response = quantvision_report_pdf_handler.lambda_handler({}, None)
+    response = quantvision_report_pdf_handler.lambda_handler(
+        {"body": json.dumps({"regenerate_charts": False})},
+        None,
+    )
     assert response["statusCode"] == 200
     assert response["headers"]["Content-Type"] == "application/pdf"
     assert response["isBase64Encoded"] is True

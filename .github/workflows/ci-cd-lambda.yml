@@ -86,6 +86,7 @@ jobs:
             -lc "pip install --no-cache-dir -r requirements.txt -t dist/lambda_package"
 
           cp -r src/otimizador dist/lambda_package/
+          cp -r scripts dist/lambda_package/
           echo "Package folder size:"
           du -sh dist/lambda_package
           cd dist/lambda_package
