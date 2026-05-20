@@ -92,6 +92,9 @@ jobs:
             public.ecr.aws/lambda/python:3.11 \
             -lc "pip install --no-cache-dir --only-binary=:all: -r $REQ_FILE -t dist/lambda_package"
 
+          # Ajusta ownership (arquivos vindos do container ficam como root).
+          sudo chown -R "$(id -u):$(id -g)" dist/lambda_package
+
           cp -r src/otimizador dist/lambda_package/
           if [ "${{ matrix.lambda_name }}" = "quantvision-report-pdf-handler" ]; then
             mkdir -p dist/lambda_package/scripts

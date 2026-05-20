@@ -1,6 +1,6 @@
 numpy==1.26.4
 pandas==2.2.2
-yfinance>=0.2.44
+yfinance==0.2.44
 reportlab>=4.0
 matplotlib==3.8.4
 contourpy==1.2.1
