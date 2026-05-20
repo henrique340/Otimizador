@@ -2,6 +2,8 @@
 
 from __future__ import annotations
 
+import time
+from datetime import date
 from pathlib import Path
 
 import pandas as pd
@@ -48,6 +50,58 @@ def _normalize_price_frame(frame: pd.DataFrame, symbols: list[str]) -> pd.DataFr
     return normalized[available].dropna()
 
 
+def _run_download_with_retries(
+    *,
+    tickers: str,
+    interval: str,
+    period: str | None,
+    date_kwargs: dict[str, str],
+    auto_adjust: bool,
+    retries: int = 3,
+) -> pd.DataFrame:
+    last_exc: Exception | None = None
+    for attempt in range(retries):
+        try:
+            result = yf.download(
+                tickers=tickers,
+                interval=interval,
+                auto_adjust=auto_adjust,
+                progress=False,
+                threads=False,
+                **({"period": period} if (period and not date_kwargs) else {}),
+                **date_kwargs,
+            )
+            if result is not None and not result.empty:
+                return result
+        except Exception as exc:  # noqa: PERF203
+            last_exc = exc
+        # backoff curto para evitar bursts/rate-limit
+        time.sleep(0.6 * (attempt + 1))
+
+    if last_exc is not None:
+        raise last_exc
+    return pd.DataFrame()
+
+
+def _fallback_period_for_range(start_date: str | None, end_date: str | None) -> str:
+    if not start_date:
+        return "max"
+    try:
+        start = pd.Timestamp(start_date).date()
+        end = pd.Timestamp(end_date).date() if end_date else date.today()
+        years = max(1, int((end - start).days / 365) + 1)
+        # Yahoo aceita 1y,2y,5y,10y,max etc. Para ranges longos, max é mais robusto.
+        if years <= 2:
+            return "2y"
+        if years <= 5:
+            return "5y"
+        if years <= 10:
+            return "10y"
+        return "max"
+    except Exception:
+        return "max"
+
+
 def _download_from_yfinance(config: DataConfig) -> pd.DataFrame:
     """Try different yfinance paths to reduce empty-download failures."""
     symbols = config.symbols
@@ -59,15 +113,35 @@ def _download_from_yfinance(config: DataConfig) -> pd.DataFrame:
         date_kwargs["end"] = config.end_date
 
     attempts: list[pd.DataFrame | None] = []
+    # 1) Download em lote com auto_adjust=True
     attempts.append(
-        yf.download(
+        _run_download_with_retries(
             tickers=tickers,
             interval=config.interval,
+            period=config.period,
+            date_kwargs=date_kwargs,
             auto_adjust=True,
-            progress=False,
-            threads=False,
-            **({"period": config.period} if not date_kwargs else {}),
-            **date_kwargs,
+        )
+    )
+    # 2) Mesmo request sem auto_adjust (alguns ativos falham só com adjust)
+    attempts.append(
+        _run_download_with_retries(
+            tickers=tickers,
+            interval=config.interval,
+            period=config.period,
+            date_kwargs=date_kwargs,
+            auto_adjust=False,
+        )
+    )
+    # 3) Fallback: usar period robusto e filtrar intervalo depois
+    period_fallback = _fallback_period_for_range(config.start_date, config.end_date)
+    attempts.append(
+        _run_download_with_retries(
+            tickers=tickers,
+            interval=config.interval,
+            period=period_fallback,
+            date_kwargs={},
+            auto_adjust=True,
         )
     )
 
@@ -80,6 +154,21 @@ def _download_from_yfinance(config: DataConfig) -> pd.DataFrame:
                 **({"period": config.period} if not date_kwargs else {}),
                 **date_kwargs,
             )
+            if frame_history is None or frame_history.empty:
+                frame_history = yf.Ticker(symbol).history(
+                    interval=config.interval,
+                    auto_adjust=True,
+                    period=period_fallback,
+                )
+            if (
+                frame_history is not None
+                and not frame_history.empty
+                and (config.start_date or config.end_date)
+            ):
+                frame_history = frame_history.loc[
+                    config.start_date or frame_history.index.min() : config.end_date
+                    or frame_history.index.max()
+                ]
             if frame_history is not None and not frame_history.empty and "Close" in frame_history.columns:
                 series_by_symbol[symbol] = frame_history["Close"]
         except Exception:
@@ -91,6 +180,11 @@ def _download_from_yfinance(config: DataConfig) -> pd.DataFrame:
     for candidate in attempts:
         if candidate is not None and not candidate.empty:
             normalized = _normalize_price_frame(candidate, symbols)
+            if config.start_date or config.end_date:
+                normalized = normalized.loc[
+                    config.start_date or normalized.index.min() : config.end_date
+                    or normalized.index.max()
+                ]
             if not normalized.empty:
                 return normalized
 
