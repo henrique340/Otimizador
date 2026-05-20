@@ -51,6 +51,7 @@ jobs:
         lambda_name:
           - quantvision-data-handler
           - quantvision-optimize-handler
+          - quantvision-report-pdf-handler
           - quantvision-report-handler
           - quantvision-status-handler
 
