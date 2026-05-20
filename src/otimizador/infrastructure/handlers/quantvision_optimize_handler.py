@@ -19,12 +19,22 @@ def lambda_handler(event, context):  # noqa: ARG001
     elif isinstance(body, dict):
         payload = body
 
-    result = run_full_experiment(
-        symbols=payload.get("symbols"),
-        period=payload.get("period"),
-        start_date=payload.get("start_date"),
-        end_date=payload.get("end_date"),
-        interval=payload.get("interval"),
-        max_weight=payload.get("max_weight"),
-    )
-    return response(200, result)
+    try:
+        result = run_full_experiment(
+            symbols=payload.get("symbols"),
+            period=payload.get("period"),
+            start_date=payload.get("start_date"),
+            end_date=payload.get("end_date"),
+            interval=payload.get("interval"),
+            max_weight=payload.get("max_weight"),
+        )
+        return response(200, result)
+    except Exception as exc:
+        return response(
+            502,
+            {
+                "error": "optimize_failed",
+                "message": str(exc),
+                "tip": "Verifique CloudWatch Logs e configure OTIMIZADOR_CACHE_DIR=/tmp/cache.",
+            },
+        )
