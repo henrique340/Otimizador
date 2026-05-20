@@ -2,14 +2,23 @@
 
 from __future__ import annotations
 
+import os
 import time
 from datetime import date
 from pathlib import Path
 
+import numpy as np
 import pandas as pd
 import yfinance as yf
 
 from otimizador.domain.config import DataConfig
+
+
+def _env_flag(name: str, default: bool = False) -> bool:
+    raw = os.getenv(name)
+    if raw is None:
+        return default
+    return raw.strip().lower() in {"1", "true", "yes", "on"}
 
 
 def _cache_file_path(config: DataConfig) -> Path:
@@ -48,6 +57,45 @@ def _normalize_price_frame(frame: pd.DataFrame, symbols: list[str]) -> pd.DataFr
         raise ValueError("Nenhum simbolo solicitado foi encontrado no dataset baixado.")
 
     return normalized[available].dropna()
+
+
+def _resolve_date_index(config: DataConfig) -> pd.DatetimeIndex:
+    if config.start_date or config.end_date:
+        start = config.start_date or "2018-01-01"
+        end = config.end_date or pd.Timestamp.today().strftime("%Y-%m-%d")
+        idx = pd.date_range(start=start, end=end, freq="B")
+        if len(idx) >= 2:
+            return idx
+
+    period_map = {
+        "1mo": 22,
+        "3mo": 66,
+        "6mo": 132,
+        "1y": 252,
+        "2y": 504,
+        "5y": 1260,
+        "10y": 2520,
+        "max": 2520,
+    }
+    size = period_map.get((config.period or "").lower(), 504)
+    end = pd.Timestamp.today().normalize()
+    return pd.date_range(end=end, periods=size, freq="B")
+
+
+def _generate_synthetic_prices(config: DataConfig) -> pd.DataFrame:
+    idx = _resolve_date_index(config)
+    data: dict[str, np.ndarray] = {}
+    for i, symbol in enumerate(config.symbols):
+        # Deterministico por simbolo para facilitar reproducao em demos.
+        seed = abs(hash(symbol)) % (2**32)
+        rng = np.random.default_rng(seed)
+        base_price = 80.0 + (i * 20.0)
+        daily_mu = 0.0004 + (i * 0.00005)
+        daily_sigma = 0.018 + (i * 0.0015)
+        returns = rng.normal(loc=daily_mu, scale=daily_sigma, size=len(idx))
+        path = base_price * np.exp(np.cumsum(returns))
+        data[symbol] = path
+    return pd.DataFrame(data, index=idx)
 
 
 def _run_download_with_retries(
@@ -202,6 +250,10 @@ def fetch_prices(config: DataConfig) -> pd.DataFrame:
         normalized.to_csv(cache_path, index=True)
         return normalized
     except Exception as exc:
+        if _env_flag("OTIMIZADOR_ALLOW_SYNTHETIC_DATA", default=False):
+            synthetic = _generate_synthetic_prices(config)
+            synthetic.to_csv(cache_path, index=True)
+            return synthetic
         if not cache_path.exists():
             raise ValueError(
                 f"Falha na ingestao sem cache local. Detalhes: {exc}"
