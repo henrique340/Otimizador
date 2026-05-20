@@ -56,15 +56,15 @@ def lambda_handler(event, context):  # noqa: ARG001
         pdf_bytes = Path(pdf_path).read_bytes()
         pdf_b64 = base64.b64encode(pdf_bytes).decode("ascii")
 
-        return response(
-            200,
-            {
-                "message": "PDF gerado com sucesso",
-                "filename": Path(pdf_path).name,
-                "content_type": "application/pdf",
-                "pdf_base64": pdf_b64,
+        return {
+            "statusCode": 200,
+            "headers": {
+                "Content-Type": "application/pdf",
+                "Content-Disposition": f'attachment; filename="{Path(pdf_path).name}"',
             },
-        )
+            "isBase64Encoded": True,
+            "body": pdf_b64,
+        }
     except Exception as exc:
         return response(
             502,
@@ -74,4 +74,3 @@ def lambda_handler(event, context):  # noqa: ARG001
                 "tip": "Verifique logs no CloudWatch e o cache em /tmp.",
             },
         )
-
