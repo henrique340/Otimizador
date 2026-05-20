@@ -1,11 +1,16 @@
-﻿:root {
-  --bg: #f4f7f2;
-  --panel: #ffffff;
-  --ink: #123;
-  --muted: #52606d;
-  --line: #d8e0d3;
-  --accent: #1d6f42;
-  --accent-soft: #e4f3ea;
+:root {
+  --bg-0: #070b13;
+  --bg-1: #0b1220;
+  --bg-2: #111a2e;
+  --panel: #121b2f;
+  --line: #283554;
+  --ink: #e6eeff;
+  --ink-soft: #9eb0d1;
+  --accent: #36c4ff;
+  --ok-bg: #123329;
+  --ok-line: #2d7b5b;
+  --ok-ink: #9cf0cc;
+  --shadow: rgba(0, 0, 0, 0.42);
 }
 
 * {
@@ -14,26 +19,32 @@
 
 body {
   margin: 0;
+  min-height: 100vh;
   font-family: "Segoe UI", Tahoma, Geneva, Verdana, sans-serif;
-  background: radial-gradient(circle at 0% 0%, #eaf4ff, var(--bg) 40%);
   color: var(--ink);
+  background:
+    radial-gradient(1200px 500px at 15% -10%, rgba(54, 196, 255, 0.12), transparent 55%),
+    radial-gradient(1000px 600px at 95% -10%, rgba(127, 125, 255, 0.14), transparent 60%),
+    linear-gradient(180deg, var(--bg-0) 0%, var(--bg-1) 42%, var(--bg-2) 100%);
 }
 
 .layout {
-  max-width: 1100px;
-  margin: 24px auto;
+  max-width: 1280px;
+  margin: 22px auto 30px;
   padding: 0 16px;
   display: grid;
   gap: 16px;
-  grid-template-columns: repeat(auto-fit, minmax(320px, 1fr));
+  grid-template-columns: 1.1fr 0.9fr 1.2fr;
 }
 
 .panel {
-  background: var(--panel);
+  background: linear-gradient(165deg, rgba(17, 26, 46, 0.96), rgba(18, 27, 47, 0.9));
   border: 1px solid var(--line);
-  border-radius: 12px;
+  border-radius: 14px;
   padding: 16px;
-  box-shadow: 0 8px 20px rgba(0, 0, 0, 0.06);
+  box-shadow:
+    0 16px 28px var(--shadow),
+    inset 0 1px 0 rgba(255, 255, 255, 0.05);
 }
 
 h1,
@@ -42,9 +53,35 @@ h3 {
   margin: 0 0 12px;
 }
 
+h1 {
+  font-size: 24px;
+  background: linear-gradient(90deg, #def4ff, #b9c6ff);
+  -webkit-background-clip: text;
+  background-clip: text;
+  color: transparent;
+}
+
+h2 {
+  font-size: 19px;
+  color: #d8e4ff;
+}
+
+h3 {
+  margin-top: 14px;
+  color: #bfd0f4;
+  font-size: 14px;
+}
+
 p {
   margin: 0 0 16px;
-  color: var(--muted);
+  color: var(--ink-soft);
+}
+
+code {
+  background: rgba(127, 125, 255, 0.14);
+  color: #d7d5ff;
+  padding: 2px 6px;
+  border-radius: 5px;
 }
 
 .row {
@@ -55,58 +92,70 @@ p {
 }
 
 label {
-  min-width: 90px;
+  min-width: 98px;
+  color: #c9d8f8;
+  font-size: 13px;
   font-weight: 600;
 }
 
 input,
 select {
   flex: 1;
-  border: 1px solid var(--line);
-  border-radius: 8px;
+  border: 1px solid #32486f;
+  border-radius: 10px;
   padding: 10px;
-  background: #fff;
+  background: #0e1628;
+  color: #eaf1ff;
+  outline: none;
+}
+
+input:focus,
+select:focus {
+  border-color: var(--accent);
+  box-shadow: 0 0 0 3px rgba(54, 196, 255, 0.16);
 }
 
 button {
-  border: none;
-  border-radius: 8px;
-  background: var(--accent);
-  color: white;
+  border: 1px solid #3f5b8f;
+  border-radius: 10px;
+  background: linear-gradient(90deg, #263b64, #2f4a7c);
+  color: #eff5ff;
   padding: 10px 14px;
-  font-weight: 600;
+  font-weight: 700;
   cursor: pointer;
 }
 
 button:hover {
-  opacity: 0.92;
+  filter: brightness(1.08);
 }
 
 .status {
-  background: var(--accent-soft);
-  border: 1px solid #bfddcb;
-  border-radius: 8px;
+  background: var(--ok-bg);
+  border: 1px solid var(--ok-line);
+  border-radius: 10px;
   padding: 10px;
-  color: #214d31;
+  color: var(--ok-ink);
 }
 
 .insight-card {
-  border: 1px solid #d9ebdd;
-  border-radius: 10px;
-  background: #f5fbf6;
+  border: 1px solid #2a3f66;
+  border-radius: 12px;
+  background: linear-gradient(170deg, rgba(19, 31, 53, 0.95), rgba(15, 23, 40, 0.95));
   padding: 10px;
   margin-bottom: 10px;
 }
 
 .insight-label {
-  color: var(--muted);
+  color: #9cb0d8;
   font-size: 12px;
-  margin-bottom: 4px;
+  margin-bottom: 5px;
+  text-transform: uppercase;
+  letter-spacing: 0.45px;
 }
 
 .insight-value {
   font-weight: 700;
-  color: #1f4f32;
+  color: #e8f3ff;
 }
 
 .metrics {
@@ -116,21 +165,38 @@ button:hover {
   margin-bottom: 12px;
 }
 
+.metrics div {
+  background: rgba(13, 21, 38, 0.82);
+  border: 1px solid #27385b;
+  border-radius: 8px;
+  padding: 8px;
+}
+
 .metrics span {
-  color: var(--muted);
+  color: #97abd2;
+  display: inline-block;
+  min-width: 116px;
 }
 
 pre {
   margin: 0 0 12px;
-  background: #0b1320;
-  color: #d5e2ff;
+  background: #070e1a;
+  color: #cbe0ff;
   padding: 12px;
-  border-radius: 8px;
+  border-radius: 10px;
+  border: 1px solid #223456;
   overflow: auto;
   font-size: 12px;
+  line-height: 1.4;
 }
 
-@media (max-width: 520px) {
+@media (max-width: 1140px) {
+  .layout {
+    grid-template-columns: 1fr;
+  }
+}
+
+@media (max-width: 560px) {
   .row {
     flex-direction: column;
     align-items: stretch;

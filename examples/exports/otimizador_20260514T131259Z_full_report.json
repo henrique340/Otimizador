@@ -21,7 +21,7 @@
         "VALE3.SA": 0.29909846596476103,
         "ITUB4.SA": 0.6
       },
-      "elapsed_ms": 201.78150001447648,
+      "elapsed_ms": 243.4678000281565,
       "metadata": {
         "risk_aversion": 0.35,
         "portfolio_volatility": 0.017766430559881297,
@@ -65,7 +65,7 @@
         "VALE3.SA": 0.29929964973442436,
         "ITUB4.SA": 0.6
       },
-      "elapsed_ms": 519.5974000380374,
+      "elapsed_ms": 499.8041999642737,
       "metadata": {
         "risk_aversion": 0.35,
         "portfolio_volatility": 0.017766277601811774,
@@ -111,7 +111,7 @@
         "VALE3.SA": 0.21854747200394278,
         "ITUB4.SA": 0.4231093810785536
       },
-      "elapsed_ms": 49.868700036313385,
+      "elapsed_ms": 47.59330005617812,
       "metadata": {
         "risk_aversion": 0.35,
         "portfolio_volatility": 0.019358007252372772,
@@ -160,7 +160,7 @@
         "algorithm": "genetic_algorithm",
         "objective_value": -0.005321113140913364,
         "expected_return": 0.0008970840197207563,
-        "elapsed_ms": 519.5974000380374,
+        "elapsed_ms": 499.8041999642737,
         "portfolio_volatility": 0.017766277601811774,
         "sharpe_ratio": 0.05049363968225247,
         "weights": {
@@ -178,7 +178,7 @@
         "algorithm": "linear_programming",
         "objective_value": -0.005321113455722376,
         "expected_return": 0.0008971372402360779,
-        "elapsed_ms": 201.78150001447648,
+        "elapsed_ms": 243.4678000281565,
         "portfolio_volatility": 0.017766430559881297,
         "sharpe_ratio": 0.05049620052898639,
         "weights": {
@@ -196,7 +196,7 @@
         "algorithm": "simulated_annealing",
         "objective_value": -0.0057502872299370214,
         "expected_return": 0.0010250153083934484,
-        "elapsed_ms": 49.868700036313385,
+        "elapsed_ms": 47.59330005617812,
         "portfolio_volatility": 0.019358007252372772,
         "sharpe_ratio": 0.052950455851689435,
         "weights": {
