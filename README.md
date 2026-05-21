@@ -1,4 +1,4 @@
-﻿# Otimizador (QuantVision)
+﻿# Otimizador - QuantVision
 
 Projeto MVP para comparacao de algoritmos de otimizacao de carteira com ativos da B3, com frontend web e backend publicado na AWS.
 
