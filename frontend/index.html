@@ -1,110 +1,966 @@
-﻿<!doctype html>
+<!DOCTYPE html>
 <html lang="pt-BR">
-  <head>
-    <meta charset="UTF-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>Otimizador MVP</title>
-    <link rel="stylesheet" href="./styles.css?v=2" />
-  </head>
-  <body>
-    <main class="layout">
-      <section class="panel">
-        <h1>Otimizador (LP/GA/SA)</h1>
-        <p>Compare resultados entre varios ativos no endpoint <code>/optimize</code>.</p>
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>QuantVision – Otimização de Carteiras B3</title>
+<link href="https://fonts.googleapis.com/css2?family=Syne:wght@600;700;800&family=DM+Sans:wght@300;400;500;600&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
+<style>
+:root{--bg:#0c0c14;--surface:#13131f;--surface2:#1a1a2e;--surface3:#20203a;--border:rgba(255,255,255,.07);--accent:#ff6b1a;--accent2:#ff8c42;--accent-dim:#ff6b1a28;--green:#22c55e;--green-dim:#22c55e1a;--red:#ef4444;--red-dim:#ef44441a;--text:#f0f0fa;--text2:#9090b0;--text3:#55557a;--blue:#4f8ef7;--purple:#a78bfa;--yellow:#fbbf24}
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
+body{font-family:'DM Sans',sans-serif;background:var(--bg);color:var(--text);min-height:100vh;overflow-x:hidden}
+.app{display:flex;height:100vh;overflow:hidden}
 
-        <div class="row">
-          <label for="apiBase">API Base URL</label>
-          <input id="apiBase" value="http://localhost:8000" />
+/* SIDEBAR */
+.sidebar{width:240px;background:var(--surface);border-right:1px solid var(--border);display:flex;flex-direction:column;flex-shrink:0;transform:translateX(-100%);position:fixed;left:0;top:0;bottom:0;z-index:100;transition:transform .3s cubic-bezier(.4,0,.2,1)}
+.sidebar.open{transform:translateX(0)}
+.overlay{position:fixed;inset:0;background:rgba(0,0,0,.6);z-index:99;display:none;backdrop-filter:blur(2px)}
+.overlay.open{display:block}
+.sb-head{display:flex;align-items:center;justify-content:space-between;padding:18px 18px 14px;border-bottom:1px solid var(--border)}
+.sb-logo{display:flex;align-items:center;gap:9px}
+.sb-logo .li{width:26px;height:26px;background:var(--accent);border-radius:6px;display:flex;align-items:center;justify-content:center}
+.sb-logo .li svg{width:14px;height:14px;stroke:white;fill:none;stroke-width:1.8;stroke-linecap:round;stroke-linejoin:round}
+.sb-logo span{font-family:'Syne',sans-serif;font-weight:700;font-size:15px}
+.sb-x{width:26px;height:26px;border:none;background:var(--surface3);color:var(--text2);border-radius:5px;cursor:pointer;font-size:14px;display:flex;align-items:center;justify-content:center;transition:background .2s}
+.sb-x:hover{background:var(--surface2);color:var(--text)}
+.sb-lbl{font-size:10px;font-weight:600;color:var(--text3);letter-spacing:.12em;text-transform:uppercase;padding:18px 18px 7px}
+.nav-item{display:flex;align-items:center;gap:11px;padding:10px 18px;color:var(--text2);font-size:13.5px;font-weight:500;cursor:pointer;border-left:3px solid transparent;transition:all .2s}
+.nav-item:hover{background:var(--surface2);color:var(--text)}
+.nav-item.active{background:var(--accent-dim);color:var(--accent);border-left-color:var(--accent)}
+.nav-item .ni{font-size:15px;width:18px;text-align:center}
+.sb-div{height:1px;background:var(--border);margin:6px 16px}
+
+/* MAIN */
+.main{flex:1;display:flex;flex-direction:column;overflow:hidden}
+.header{display:flex;align-items:center;justify-content:space-between;padding:0 18px;height:54px;background:var(--surface);border-bottom:1px solid var(--border);flex-shrink:0}
+.header-left{display:flex;align-items:center;gap:12px}
+.hamburger{width:34px;height:34px;background:none;border:none;color:var(--text2);cursor:pointer;border-radius:7px;display:flex;align-items:center;justify-content:center;transition:background .2s,color .2s}
+.hamburger:hover{background:var(--surface2);color:var(--text)}
+.brand{font-family:'Syne',sans-serif;font-weight:700;font-size:16px}
+.brand span{color:var(--accent)}
+.header-right{display:flex;align-items:center;gap:7px}
+.icon-btn{width:34px;height:34px;background:var(--surface2);border:1px solid var(--border);border-radius:7px;cursor:pointer;color:var(--text2);display:flex;align-items:center;justify-content:center;font-size:14px;transition:all .2s}
+.icon-btn:hover{background:var(--surface3);color:var(--text)}
+
+/* URL CONFIG */
+.api-bar{background:rgba(255,107,26,.06);border-bottom:1px solid rgba(255,107,26,.15);padding:7px 18px;display:flex;align-items:center;gap:10px;font-size:12px}
+.api-bar label{color:var(--text2);flex-shrink:0}
+.api-bar input{background:var(--surface2);border:1px solid var(--border);border-radius:6px;padding:4px 10px;color:var(--text);font-size:12px;font-family:'JetBrains Mono',monospace;flex:1;outline:none;transition:border .2s}
+.api-bar input:focus{border-color:var(--accent)}
+.api-bar .dot{width:7px;height:7px;border-radius:50%;background:var(--text3);flex-shrink:0;transition:background .3s}
+.api-bar .dot.online{background:var(--green);box-shadow:0 0 5px var(--green)}
+.api-bar .dot.offline{background:var(--red)}
+
+/* PAGE */
+.page{flex:1;overflow-y:auto;padding:18px;display:none;animation:fi .22s ease}
+.page.active{display:block}
+@keyframes fi{from{opacity:0;transform:translateY(5px)}to{opacity:1;transform:translateY(0)}}
+.page-title{font-family:'Syne',sans-serif;font-size:20px;font-weight:800;margin-bottom:3px}
+.page-sub{font-size:12.5px;color:var(--text2);margin-bottom:18px}
+.section-title{font-size:10px;font-weight:600;color:var(--text3);letter-spacing:.1em;text-transform:uppercase;margin-bottom:9px}
+.card{background:var(--surface);border:1px solid var(--border);border-radius:11px;padding:14px}
+.card+.card{margin-top:11px}
+.divider{height:1px;background:var(--border);margin:13px 0}
+
+/* STAT ROW */
+.stat-row{display:flex;gap:9px;margin-bottom:12px}
+.stat-box{flex:1;background:var(--surface2);border:1px solid var(--border);border-radius:9px;padding:11px;text-align:center}
+.stat-value{font-family:'JetBrains Mono',monospace;font-size:17px;font-weight:500}
+.stat-label{font-size:9.5px;color:var(--text3);margin-top:2px;text-transform:uppercase;letter-spacing:.07em}
+
+/* BTN */
+.btn{display:flex;align-items:center;justify-content:center;gap:7px;width:100%;padding:12px;border:none;border-radius:9px;font-size:13px;font-weight:600;cursor:pointer;transition:all .2s;font-family:'DM Sans',sans-serif}
+.btn-primary{background:var(--accent);color:white}
+.btn-primary:hover{background:var(--accent2);transform:translateY(-1px);box-shadow:0 4px 14px rgba(255,107,26,.32)}
+.btn-primary:disabled{opacity:.5;cursor:not-allowed;transform:none;box-shadow:none}
+.btn-ghost{background:var(--surface2);color:var(--text);border:1px solid var(--border)}
+.btn-ghost:hover{background:var(--surface3)}
+.btn-outline{background:transparent;color:var(--accent);border:1px solid var(--accent)}
+.btn-outline:hover{background:var(--accent-dim)}
+.btn+.btn{margin-top:8px}
+
+/* TABLE */
+.tbl{width:100%;border-collapse:collapse;font-size:12.5px}
+.tbl th{text-align:left;padding:7px 9px;font-size:9.5px;font-weight:600;color:var(--text3);letter-spacing:.07em;text-transform:uppercase;border-bottom:1px solid var(--border)}
+.tbl td{padding:9px 9px;border-bottom:1px solid rgba(255,255,255,.03)}
+.tbl tr:last-child td{border-bottom:none}
+.tbl tr:hover td{background:rgba(255,255,255,.02)}
+.tick{font-family:'JetBrains Mono',monospace;font-size:11.5px;font-weight:500}
+.pos{color:var(--green)}.neg{color:var(--red)}.neu{color:var(--text2)}
+
+/* BADGE */
+.badge{display:inline-flex;align-items:center;gap:4px;padding:2px 8px;border-radius:20px;font-size:10.5px;font-weight:600}
+.badge-green{background:var(--green-dim);color:var(--green)}
+.badge-red{background:var(--red-dim);color:var(--red)}
+.badge-blue{background:rgba(79,142,247,.15);color:var(--blue)}
+.badge-purple{background:rgba(167,139,250,.15);color:var(--purple)}
+.badge-yellow{background:rgba(251,191,36,.12);color:var(--yellow)}
+
+/* HIGHLIGHT */
+.hl-card{background:var(--surface2);border:1px solid var(--border);border-radius:9px;padding:11px 13px;margin-bottom:9px}
+.hl-label{font-size:9.5px;color:var(--text3);text-transform:uppercase;letter-spacing:.07em;margin-bottom:5px}
+.hl-main{display:flex;align-items:center;justify-content:space-between}
+.hl-tick{font-family:'JetBrains Mono',monospace;font-size:17px;font-weight:600}
+.hl-val{font-size:15px;font-weight:700}
+
+/* SEARCH */
+.search-box{display:flex;align-items:center;gap:8px;background:var(--surface2);border:1px solid var(--border);border-radius:7px;padding:9px 11px;margin-bottom:9px}
+.search-box input{flex:1;background:none;border:none;outline:none;color:var(--text);font-size:12.5px;font-family:'DM Sans',sans-serif}
+.search-box input::placeholder{color:var(--text3)}
+.filter-row{display:flex;align-items:center;justify-content:space-between;background:var(--surface2);border:1px solid var(--border);border-radius:7px;padding:9px 11px;margin-bottom:13px;font-size:12.5px;color:var(--text2);cursor:pointer}
+
+/* CHECKBOX */
+.chk{width:17px;height:17px;border-radius:4px;border:1.5px solid var(--border);background:var(--surface2);cursor:pointer;flex-shrink:0;display:flex;align-items:center;justify-content:center;transition:all .15s}
+.chk.checked{background:var(--accent);border-color:var(--accent)}
+.chk.checked::after{content:'✓';color:white;font-size:10px;font-weight:700}
+
+/* TABS */
+.tabs{display:flex;gap:3px;margin-bottom:14px;background:var(--surface2);border-radius:7px;padding:3px}
+.tab{flex:1;padding:7px;text-align:center;font-size:11.5px;font-weight:600;border-radius:5px;cursor:pointer;color:var(--text2);transition:all .2s}
+.tab.active{background:var(--surface3);color:var(--text)}
+
+/* METRIC GRID */
+.metric-grid{display:grid;grid-template-columns:1fr 1fr;gap:9px;margin-bottom:13px}
+.metric-card{background:var(--surface2);border:1px solid var(--border);border-radius:9px;padding:11px}
+.metric-card .m-label{font-size:9.5px;color:var(--text3);text-transform:uppercase;letter-spacing:.07em;margin-bottom:3px}
+.metric-card .m-val{font-family:'JetBrains Mono',monospace;font-size:19px;font-weight:600}
+
+/* ALLOC BAR */
+.alloc-row{display:flex;align-items:center;gap:9px;padding:7px 0;border-bottom:1px solid rgba(255,255,255,.03)}
+.alloc-tick{font-family:'JetBrains Mono',monospace;font-size:11px;font-weight:500;width:60px;flex-shrink:0}
+.alloc-bar-bg{flex:1;background:var(--surface3);border-radius:4px;height:5px;overflow:hidden}
+.alloc-bar{height:100%;border-radius:4px;background:var(--accent);transition:width .6s ease}
+.alloc-pct{font-family:'JetBrains Mono',monospace;font-size:11px;color:var(--text2);width:38px;text-align:right;flex-shrink:0}
+
+/* METHOD CARD */
+.method-card{background:var(--surface2);border:1px solid var(--border);border-radius:11px;padding:13px;margin-bottom:9px}
+.method-head{display:flex;justify-content:space-between;align-items:flex-start;margin-bottom:9px}
+.method-name{font-size:12.5px;font-weight:600;display:flex;align-items:center;gap:8px}
+.method-icon{width:28px;height:28px;border-radius:7px;display:flex;align-items:center;justify-content:center;font-size:13px}
+.method-stats{display:flex;gap:7px;flex-wrap:wrap}
+.mstat{background:var(--surface3);border-radius:5px;padding:5px 9px}
+.mstat .ms-l{font-size:9px;color:var(--text3);text-transform:uppercase}
+.mstat .ms-v{font-family:'JetBrains Mono',monospace;font-size:13px;font-weight:600}
+.top-ativos{font-size:11px;color:var(--text2);margin-top:7px}
+.top-ativos span{font-family:'JetBrains Mono',monospace;font-weight:500;color:var(--text)}
+
+/* REC CARD */
+.rec-card{background:rgba(255,107,26,.07);border:1px solid rgba(255,107,26,.2);border-radius:11px;padding:13px;margin-bottom:11px}
+.rec-head{display:flex;align-items:center;gap:7px;font-size:12.5px;font-weight:600;margin-bottom:7px}
+.rec-body{font-size:11.5px;color:var(--text2);line-height:1.7}
+
+/* CHART */
+.chart-area{background:var(--surface2);border:1px solid var(--border);border-radius:9px;overflow:hidden;margin-bottom:11px}
+.chart-title{padding:9px 13px;font-size:11.5px;font-weight:600;border-bottom:1px solid var(--border);display:flex;align-items:center;justify-content:space-between}
+
+/* LEGEND */
+.legend{display:flex;flex-direction:column;gap:5px;font-size:10.5px}
+.legend-item{display:flex;align-items:center;gap:6px}
+.legend-dot{width:7px;height:7px;border-radius:2px;flex-shrink:0}
+
+/* DONUT ROW */
+.donut-row{display:flex;gap:9px;margin-bottom:13px}
+.donut-wrap{flex:1;display:flex;flex-direction:column;align-items:center;gap:7px}
+.donut-label-s{font-size:10.5px;color:var(--text2);text-align:center}
+
+/* PIE */
+.pie-area{display:flex;justify-content:center;padding:8px 0}
+
+/* ACADEMIC */
+.academic{background:var(--surface2);border-left:3px solid var(--blue);border-radius:0 9px 9px 0;padding:11px 13px;margin-bottom:11px;font-size:11.5px;color:var(--text2);line-height:1.7}
+.academic strong{color:var(--text)}
+
+/* LOADING */
+.loading{display:flex;flex-direction:column;align-items:center;justify-content:center;gap:14px;padding:40px 20px;text-align:center}
+.spinner{width:36px;height:36px;border:3px solid var(--surface3);border-top-color:var(--accent);border-radius:50%;animation:spin 1s linear infinite}
+@keyframes spin{to{transform:rotate(360deg)}}
+.loading-text{font-size:13px;color:var(--text2)}
+.loading-sub{font-size:11px;color:var(--text3)}
+
+/* ERROR */
+.error-card{background:rgba(239,68,68,.07);border:1px solid rgba(239,68,68,.2);border-radius:11px;padding:14px;margin-bottom:11px}
+.error-card .eh{font-size:12.5px;font-weight:600;color:var(--red);margin-bottom:6px}
+.error-card .em{font-size:11.5px;color:var(--text2);line-height:1.6}
+.error-card .et{font-family:'JetBrains Mono',monospace;font-size:10.5px;color:var(--text3);margin-top:7px;background:var(--surface3);padding:6px 9px;border-radius:5px;word-break:break-all}
+
+/* PARAMS FORM */
+.form-row{margin-bottom:12px}
+.form-row label{display:block;font-size:10.5px;font-weight:600;color:var(--text3);text-transform:uppercase;letter-spacing:.07em;margin-bottom:5px}
+.form-row input,.form-row select{width:100%;background:var(--surface2);border:1px solid var(--border);border-radius:7px;padding:9px 11px;color:var(--text);font-size:12.5px;font-family:'DM Sans',sans-serif;outline:none;transition:border .2s}
+.form-row input:focus,.form-row select:focus{border-color:var(--accent)}
+.form-row select option{background:var(--surface2)}
+.form-2{display:grid;grid-template-columns:1fr 1fr;gap:9px}
+
+/* TAG INPUT */
+.tag-wrap{display:flex;flex-wrap:wrap;gap:5px;background:var(--surface2);border:1px solid var(--border);border-radius:7px;padding:7px 9px;cursor:text;min-height:40px;align-items:center;transition:border .2s}
+.tag-wrap:focus-within{border-color:var(--accent)}
+.tag{display:inline-flex;align-items:center;gap:5px;background:var(--accent-dim);border:1px solid rgba(255,107,26,.3);color:var(--accent);border-radius:5px;padding:2px 7px;font-size:11px;font-family:'JetBrains Mono',monospace;font-weight:500}
+.tag .tx{cursor:pointer;font-size:13px;line-height:1;opacity:.7;transition:opacity .15s}
+.tag .tx:hover{opacity:1}
+.tag-input{border:none;outline:none;background:none;color:var(--text);font-size:12px;font-family:'JetBrains Mono',monospace;min-width:80px;flex:1}
+
+/* SUM TABLE */
+.sum-tbl{width:100%;border-collapse:collapse;font-size:12px}
+.sum-tbl th{padding:7px 9px;text-align:left;font-size:9px;color:var(--text3);font-weight:600;text-transform:uppercase;letter-spacing:.07em;border-bottom:1px solid var(--border)}
+.sum-tbl td{padding:9px 9px;border-bottom:1px solid rgba(255,255,255,.03)}
+.sum-tbl tr:last-child td{border-bottom:none}
+
+/* WINNER */
+.winner-badge{display:inline-flex;align-items:center;gap:6px;background:rgba(251,191,36,.1);border:1px solid rgba(251,191,36,.25);color:var(--yellow);border-radius:8px;padding:4px 10px;font-size:11px;font-weight:600}
+
+::-webkit-scrollbar{width:4px}
+::-webkit-scrollbar-track{background:transparent}
+::-webkit-scrollbar-thumb{background:var(--surface3);border-radius:4px}
+
+@media(min-width:640px){
+.sidebar{position:static;transform:none;width:220px}
+.overlay{display:none!important}
+.sb-x{display:none}
+}
+</style>
+</head>
+<body>
+<div class="app">
+<div class="overlay" id="overlay" onclick="closeSidebar()"></div>
+
+<!-- SIDEBAR -->
+<nav class="sidebar" id="sidebar">
+  <div class="sb-head">
+    <div class="sb-logo">
+      <div class="li"><svg viewBox="0 0 16 16"><polyline points="2,12 5,8 8,10 11,4 14,6"/></svg></div>
+      <span>QuantVision</span>
+    </div>
+    <button class="sb-x" onclick="closeSidebar()">✕</button>
+  </div>
+  <div class="sb-lbl">Menu do Sistema</div>
+  <div class="nav-item active" onclick="nav('home',this)"><span class="ni">⊞</span> Início</div>
+  <div class="nav-item" onclick="nav('ativos',this)"><span class="ni">◈</span> Seleção de Ativos</div>
+  <div class="nav-item" onclick="nav('resultados',this)"><span class="ni">◉</span> Resultados</div>
+  <div class="nav-item" onclick="nav('comparacao',this)"><span class="ni">⊟</span> Comparação</div>
+  <div class="nav-item" onclick="nav('dashboard',this)"><span class="ni">◈</span> Dashboard</div>
+  <div class="sb-div"></div>
+  <div class="nav-item" onclick="nav('export',this)"><span class="ni">↑</span> Exportação</div>
+</nav>
+
+<!-- MAIN -->
+<div class="main">
+  <header class="header">
+    <div class="header-left">
+      <button class="hamburger" onclick="toggleSidebar()">
+        <svg width="17" height="17" viewBox="0 0 17 17" fill="none">
+          <rect y="3" width="17" height="1.8" rx="1" fill="currentColor"/>
+          <rect y="7.6" width="12" height="1.8" rx="1" fill="currentColor"/>
+          <rect y="12.2" width="17" height="1.8" rx="1" fill="currentColor"/>
+        </svg>
+      </button>
+      <div class="brand">Quant<span>Vision</span></div>
+    </div>
+    <div class="header-right">
+      <button class="icon-btn" title="Configurações" onclick="nav('config',this)">⚙</button>
+    </div>
+  </header>
+
+  <!-- API BAR -->
+  <div class="api-bar">
+    <div class="dot" id="api-dot"></div>
+    <label>API:</label>
+    <input type="text" id="api-url" value="https://rqdwpiwn5b.execute-api.us-east-2.amazonaws.com/prod" onchange="checkStatus()" onblur="checkStatus()">
+    <span id="api-status" style="color:var(--text3);font-size:11px;">verificando...</span>
+  </div>
+
+  <!-- ══ HOME ══ -->
+  <div class="page active" id="page-home">
+    <div class="page-title">Painel de Controle</div>
+    <div class="page-sub">Visão geral do sistema</div>
+
+    <div class="section-title">Status do Sistema</div>
+    <div class="stat-row">
+      <div class="stat-box"><div class="stat-value" id="h-nativos">—</div><div class="stat-label">Ativos Selecionados</div></div>
+      <div class="stat-box"><div class="stat-value" id="h-periodo">—</div><div class="stat-label">Período</div></div>
+      <div class="stat-box"><div class="stat-value" id="h-status">—</div><div class="stat-label">Status API</div></div>
+    </div>
+
+    <button class="btn btn-primary" onclick="nav('ativos', document.querySelector('.nav-item:nth-child(3)'))">+ Nova Análise</button>
+
+    <div class="divider"></div>
+    <div class="section-title">Último Resultado</div>
+    <div id="home-last-result">
+      <div style="text-align:center;padding:24px 0;color:var(--text3);font-size:13px;">Nenhuma análise executada ainda.<br>Clique em <strong>+ Nova Análise</strong> para começar.</div>
+    </div>
+  </div>
+
+  <!-- ══ ATIVOS ══ -->
+  <div class="page" id="page-ativos">
+    <div class="page-title">Seleção de Ativos</div>
+    <div class="page-sub">Selecione os ativos da B3 para compor o universo de otimização</div>
+
+    <div class="card">
+      <div class="section-title">Ativos (tickers)</div>
+      <div class="tag-wrap" id="tag-wrap" onclick="document.getElementById('tag-input').focus()">
+        <input class="tag-input" id="tag-input" placeholder="Ex: VALE3, PETR4, ITUB4 + Enter" onkeydown="handleTagInput(event)">
+      </div>
+      <div style="font-size:11px;color:var(--text3);margin-top:5px;">Pressione Enter após cada ticker. O sufixo .SA é adicionado automaticamente.</div>
+    </div>
+
+    <div class="card" style="margin-top:11px;">
+      <div class="section-title">Parâmetros</div>
+      <div class="form-row">
+        <label>Período Histórico</label>
+        <select id="p-period">
+          <option value="1y">1 ano</option>
+          <option value="2y">2 anos</option>
+          <option value="5y">5 anos</option>
+          <option value="" selected>Personalizado (use datas abaixo)</option>
+        </select>
+      </div>
+      <div class="form-2">
+        <div class="form-row">
+          <label>Data Inicial (opcional)</label>
+          <input type="date" id="p-start" value="2015-01-01">
         </div>
-
-        <div class="row">
-          <label for="symbols">Ativos</label>
-          <input id="symbols" value="PETR4.SA,VALE3.SA,ITUB4.SA" />
+        <div class="form-row">
+          <label>Data Final (opcional)</label>
+          <input type="date" id="p-end" value="2025-12-31">
         </div>
+      </div>
+      <div class="form-row">
+        <label>Peso Máximo por Ativo</label>
+        <input type="number" id="p-maxweight" value="0.6" min="0.1" max="1" step="0.05">
+      </div>
+    </div>
 
-        <div class="row">
-          <label for="startDate">Data inicial</label>
-          <input id="startDate" value="2015-01-01" />
+    <div style="margin-top:13px;">
+      <div id="ativos-sel-info" style="padding:9px 13px;background:var(--surface2);border-radius:7px;border:1px solid var(--border);display:flex;align-items:center;justify-content:space-between;margin-bottom:11px;">
+        <span style="font-size:12px;color:var(--text2);">Resumo da seleção</span>
+        <span id="sel-count" style="font-size:12px;font-weight:600;" class="pos">0 ativos</span>
+      </div>
+      <button class="btn btn-primary" id="btn-run" onclick="runOptimization()" disabled>Executar Otimização →</button>
+    </div>
+  </div>
+
+  <!-- ══ RESULTADOS ══ -->
+  <div class="page" id="page-resultados">
+    <div class="page-title">Resultados da Otimização</div>
+    <div class="page-sub">Relatório técnico de alocação</div>
+    <div id="results-content">
+      <div style="text-align:center;padding:24px 0;color:var(--text3);font-size:13px;">Execute uma análise primeiro.</div>
+    </div>
+  </div>
+
+  <!-- ══ COMPARAÇÃO ══ -->
+  <div class="page" id="page-comparacao">
+    <div class="page-title">Comparação de Técnicas</div>
+    <div class="page-sub">Análise técnica multimétodo do portfólio</div>
+    <div id="comp-content">
+      <div style="text-align:center;padding:24px 0;color:var(--text3);font-size:13px;">Execute uma análise primeiro.</div>
+    </div>
+  </div>
+
+  <!-- ══ DASHBOARD ══ -->
+  <div class="page" id="page-dashboard">
+    <div class="page-title">Dashboard Comparativo</div>
+    <div class="page-sub">Análise visual integrada das técnicas</div>
+    <div id="dash-content">
+      <div style="text-align:center;padding:24px 0;color:var(--text3);font-size:13px;">Execute uma análise primeiro.</div>
+    </div>
+  </div>
+
+  <!-- ══ EXPORT ══ -->
+  <div class="page" id="page-export">
+    <div class="page-title">Exportação</div>
+    <div class="page-sub">Gere relatórios e exporte seus dados</div>
+    <div id="export-content">
+      <div class="card">
+        <div class="section-title">Exportar Dados</div>
+        <div style="margin-top:8px;">
+          <button class="btn btn-ghost" onclick="exportCSV()">📊 Baixar CSV de Comparação</button>
+          <button class="btn btn-ghost" style="margin-top:8px;" onclick="exportJSON()">📄 Baixar JSON Completo</button>
+          <button class="btn btn-outline" style="margin-top:8px;" onclick="exportWeightsCSV()">📈 Baixar Pesos por Algoritmo</button>
         </div>
+      </div>
+      <div class="card">
+        <div class="section-title">Gerar PDF via API</div>
+        <p style="font-size:12px;color:var(--text2);margin-bottom:11px;">Requer backend rodando. Gera relatório PDF completo com gráficos.</p>
+        <button class="btn btn-primary" onclick="exportPDF()">📑 Gerar Relatório PDF</button>
+      </div>
+    </div>
+  </div>
 
-        <div class="row">
-          <label for="endDate">Data final</label>
-          <input id="endDate" value="2025-12-31" />
+  <!-- ══ CONFIG ══ -->
+  <div class="page" id="page-config">
+    <div class="page-title">Configurações</div>
+    <div class="page-sub">Preferências do sistema</div>
+    <div class="card">
+      <div class="section-title">Conexão com API</div>
+      <div class="form-row" style="margin-top:8px;">
+        <label>URL da API (FastAPI local)</label>
+        <input type="text" id="cfg-url" value="https://rqdwpiwn5b.execute-api.us-east-2.amazonaws.com/prod" onchange="syncApiUrl(this.value)">
+      </div>
+      <button class="btn btn-ghost" style="margin-top:4px;" onclick="checkStatus()">🔄 Testar Conexão</button>
+    </div>
+    <div class="card">
+      <div class="section-title">Como Rodar o Backend</div>
+      <div style="background:var(--surface3);border-radius:7px;padding:11px;font-family:'JetBrains Mono',monospace;font-size:11.5px;color:var(--text2);line-height:1.8;margin-top:8px;">
+        <div style="color:var(--text3);"># Na pasta do projeto:</div>
+        <div>pip install -e .</div>
+        <div>uvicorn otimizador.infrastructure.local_api:app --reload</div>
+        <div style="color:var(--text3);margin-top:6px;"># Ou com Python:</div>
+        <div>python -m otimizador</div>
+      </div>
+    </div>
+  </div>
+
+</div><!-- /main -->
+</div><!-- /app -->
+
+<script>
+// ── State ──
+let apiData = null;
+const tags = [];
+
+const ALGO_COLORS = {
+  genetic_algorithm: '#a78bfa',
+  simulated_annealing: '#22c55e',
+  linear_programming: '#4f8ef7'
+};
+const ALGO_LABELS = {
+  genetic_algorithm: 'Alg. Genético',
+  simulated_annealing: 'Sim. Annealing',
+  linear_programming: 'Prog. Linear'
+};
+const ALGO_ICONS = {
+  genetic_algorithm: '🧬',
+  simulated_annealing: '❄',
+  linear_programming: '⧖'
+};
+const PIE_COLORS = ['#ff6b1a','#4f8ef7','#a78bfa','#22c55e','#fbbf24','#f472b6','#34d399','#60a5fa'];
+
+// ── Helpers ──
+function getApiUrl(){return document.getElementById('api-url').value.replace(/\/$/,'')}
+function pct(v,d=2){return typeof v==='number'?((v*100).toFixed(d)+'%'):'-'}
+function fmt(v,d=4){return typeof v==='number'?v.toFixed(d):'-'}
+function ms(v){if(typeof v!=='number')return '-';return v<1000?v.toFixed(0)+'ms':(v/1000).toFixed(2)+'s'}
+function cleanTick(t){return t.replace('.SA','').replace('.sa','')}
+
+// ── Navigation ──
+function nav(pageId, navEl){
+  document.querySelectorAll('.page').forEach(p=>p.classList.remove('active'));
+  document.getElementById('page-'+pageId)?.classList.add('active');
+  document.querySelectorAll('.nav-item').forEach(n=>n.classList.remove('active'));
+  if(navEl) navEl.classList.add('active');
+  if(window.innerWidth<640) closeSidebar();
+}
+function toggleSidebar(){
+  document.getElementById('sidebar').classList.toggle('open');
+  document.getElementById('overlay').classList.toggle('open');
+}
+function closeSidebar(){
+  document.getElementById('sidebar').classList.remove('open');
+  document.getElementById('overlay').classList.remove('open');
+}
+function syncApiUrl(v){
+  document.getElementById('api-url').value=v;
+  document.getElementById('cfg-url').value=v;
+  checkStatus();
+}
+
+// ── API Status ──
+async function checkStatus(){
+  const dot=document.getElementById('api-dot');
+  const st=document.getElementById('api-status');
+  dot.className='dot';
+  st.textContent='verificando...';
+  st.style.color='var(--text3)';
+  try{
+    const r=await fetch(getApiUrl()+'/status',{signal: (() => { const c = new AbortController(); setTimeout(() => c.abort(), 4000); return c.signal; })()});
+    const d=await r.json();
+    if(d.status==='ok'){
+      dot.className='dot online';
+      st.textContent='Online — '+d.service;
+      st.style.color='var(--green)';
+      document.getElementById('h-status').textContent='✓';
+      document.getElementById('h-status').className='stat-value pos';
+    }else throw new Error();
+  }catch(e){
+    dot.className='dot offline';
+    st.textContent='Offline — API não encontrada';
+    st.style.color='var(--red)';
+    document.getElementById('h-status').textContent='✗';
+    document.getElementById('h-status').className='stat-value neg';
+  }
+}
+
+// ── Tag Input ──
+function handleTagInput(e){
+  if(e.key==='Enter'||e.key===','||e.key===' '){
+    e.preventDefault();
+    const val=e.target.value.trim().replace(/,/g,'').toUpperCase();
+    if(val) addTag(val);
+    e.target.value='';
+  } else if(e.key==='Backspace'&&e.target.value===''&&tags.length>0){
+    removeTag(tags.length-1);
+  }
+}
+function addTag(ticker){
+  if(!ticker) return;
+  const clean=ticker.replace('.SA','').toUpperCase();
+  if(tags.includes(clean)) return;
+  tags.push(clean);
+  renderTags();
+}
+function removeTag(i){
+  tags.splice(i,1);
+  renderTags();
+}
+function renderTags(){
+  const wrap=document.getElementById('tag-wrap');
+  const inp=document.getElementById('tag-input');
+  wrap.innerHTML='';
+  tags.forEach((t,i)=>{
+    const el=document.createElement('div');
+    el.className='tag';
+    el.innerHTML=`${t}<span class="tx" onclick="removeTag(${i})">×</span>`;
+    wrap.appendChild(el);
+  });
+  wrap.appendChild(inp);
+  inp.focus();
+  const n=tags.length;
+  document.getElementById('sel-count').textContent=n+' ativo'+(n!==1?'s':'')+' selecionado'+(n!==1?'s':'');
+  document.getElementById('h-nativos').textContent=n||'—';
+  document.getElementById('btn-run').disabled=n<1;
+}
+
+// ── Run Optimization ──
+async function runOptimization(){
+  if(tags.length<1){alert('Selecione pelo menos 1 ativo.');return;}
+  const symbols=tags.map(t=>t+'.SA');
+  const period=document.getElementById('p-period').value||null;
+  const start=document.getElementById('p-start').value||null;
+  const end=document.getElementById('p-end').value||null;
+  const maxw=parseFloat(document.getElementById('p-maxweight').value)||0.6;
+  const payload={algorithm:'all',symbols,period,start_date:start,end_date:end,max_weight:maxw};
+
+  document.getElementById('h-periodo').textContent=period||'custom';
+
+  // Show loading on results page
+  nav('resultados',document.querySelector('.nav-item:nth-child(4)'));
+  showLoading('results-content','Executando otimização...','Isso pode levar alguns segundos');
+  showLoading('comp-content','Aguardando resultados...');
+  showLoading('dash-content','Aguardando resultados...');
+
+  try{
+    const r=await fetch(getApiUrl()+'/optimize',{
+      method:'POST',
+      headers:{'Content-Type':'application/json'},
+      body:JSON.stringify(payload),
+      signal: (() => { const c = new AbortController(); setTimeout(() => c.abort(), 120000); return c.signal; })()
+    });
+    if(!r.ok){
+      const err=await r.json().catch(()=>({message:'Erro desconhecido'}));
+      showError('results-content','Erro na API ('+r.status+')',err.message||JSON.stringify(err),err.tip);
+      showError('comp-content','Erro na API');
+      showError('dash-content','Erro na API');
+      return;
+    }
+    apiData=await r.json();
+    renderResults(apiData);
+    renderComparacao(apiData);
+    renderDashboard(apiData);
+    renderHome(apiData);
+  }catch(e){
+    const msg=e.name==='TimeoutError'?'Timeout — API demorou mais de 2 minutos':e.message;
+    showError('results-content','Falha na conexão',msg,'Verifique se o backend está rodando: uvicorn otimizador.infrastructure.local_api:app');
+    showError('comp-content','Falha na conexão',msg);
+    showError('dash-content','Falha na conexão',msg);
+  }
+}
+
+function showLoading(id,text='Carregando...',sub=''){
+  document.getElementById(id).innerHTML=`
+    <div class="loading">
+      <div class="spinner"></div>
+      <div class="loading-text">${text}</div>
+      ${sub?`<div class="loading-sub">${sub}</div>`:''}
+    </div>`;
+}
+function showError(id,title,msg='',tip=''){
+  document.getElementById(id).innerHTML=`
+    <div class="error-card">
+      <div class="eh">⚠ ${title}</div>
+      ${msg?`<div class="em">${msg}</div>`:''}
+      ${tip?`<div class="et">💡 ${tip}</div>`:''}
+    </div>
+    <button class="btn btn-ghost" onclick="nav('ativos',document.querySelector('.nav-item:nth-child(3)'))">← Voltar para Seleção</button>`;
+}
+
+// ── Render Results ──
+function renderResults(data){
+  const results=data.results||[];
+  if(!results.length){showError('results-content','Sem resultados','Nenhum algoritmo retornou dados.');return;}
+
+  let tabs='';
+  let content='';
+  results.forEach((r,i)=>{
+    const algo=r.algorithm;
+    const label=ALGO_LABELS[algo]||algo;
+    const active=i===0?'active':'';
+    tabs+=`<div class="tab ${active}" id="rtab-${i}" onclick="switchRTab(${i})">${label}</div>`;
+
+    const meta=r.metadata||{};
+    const weights=r.weights||{};
+    const wEntries=Object.entries(weights).sort((a,b)=>b[1]-a[1]);
+    const totalW=wEntries.reduce((s,[,v])=>s+v,0);
+    const pieSegs=buildPie(wEntries,110,20);
+    const legendHtml=wEntries.map(([sym,w],j)=>`
+      <div class="legend-item"><div class="legend-dot" style="background:${PIE_COLORS[j%PIE_COLORS.length]};"></div>
+      <span>${cleanTick(sym)} — ${pct(w)}</span></div>`).join('');
+    const allocHtml=wEntries.map(([sym,w])=>`
+      <div class="alloc-row">
+        <div class="alloc-tick">${cleanTick(sym)}</div>
+        <div class="alloc-bar-bg"><div class="alloc-bar" style="width:${(w*100).toFixed(1)}%;background:${PIE_COLORS[wEntries.findIndex(([s])=>s===sym)%PIE_COLORS.length]};"></div></div>
+        <div class="alloc-pct">${pct(w)}</div>
+      </div>`).join('');
+
+    content+=`<div id="rview-${i}" style="display:${i===0?'block':'none'}">
+      <div class="metric-grid">
+        <div class="metric-card"><div class="m-label">Retorno Esperado</div><div class="m-val pos">${pct(r.expected_return)}</div></div>
+        <div class="metric-card"><div class="m-label">Volatilidade</div><div class="m-val">${pct(meta.portfolio_volatility)}</div></div>
+        <div class="metric-card"><div class="m-label">Índice de Sharpe</div><div class="m-val ${(meta.sharpe_ratio||0)>0?'pos':''}">${fmt(meta.sharpe_ratio,4)}</div></div>
+        <div class="metric-card"><div class="m-label">Tempo de Execução</div><div class="m-val">${ms(r.elapsed_ms)}</div></div>
+      </div>
+      <div class="section-title">Composição do Portfólio</div>
+      <div class="card" style="display:flex;align-items:center;gap:13px;">
+        <div class="pie-area" style="flex-shrink:0;">
+          <svg width="110" height="110" viewBox="0 0 110 110">${pieSegs}<circle cx="55" cy="55" r="30" fill="var(--surface)"/></svg>
         </div>
+        <div class="legend">${legendHtml}</div>
+      </div>
+      <div class="divider"></div>
+      <div class="section-title">Alocação por Ativo</div>
+      <div class="card">${allocHtml}</div>
+      ${meta.portfolio_volatility?`
+      <div class="divider"></div>
+      <div class="card" style="background:var(--surface2);">
+        <div class="section-title">Observações Técnicas</div>
+        <p style="font-size:12px;color:var(--text2);line-height:1.75;">
+          Carteira gerada pelo <strong>${label}</strong>. Volatilidade portfólio: <strong>${pct(meta.portfolio_volatility)}</strong>.
+          Objetivo: <strong>${data.objective||'—'}</strong>. Período: <strong>${meta.period||data.period||'—'}</strong>. Amostras: <strong>${meta.samples||'—'}</strong>.
+        </p>
+      </div>`:''}
+    </div>`;
+  });
 
-        <div class="row">
-          <label for="interval">Intervalo</label>
-          <input id="interval" value="1d" />
+  document.getElementById('results-content').innerHTML=`
+    <div class="tabs" id="r-tabs">${tabs}</div>
+    ${content}
+    <div style="margin-top:13px;">
+      <button class="btn btn-ghost" onclick="nav('comparacao',document.querySelector('.nav-item:nth-child(5)'))">⇄ Comparar Técnicas</button>
+      <button class="btn btn-outline" onclick="exportCSV()">↓ Exportar CSV</button>
+    </div>`;
+}
+function switchRTab(i){
+  document.querySelectorAll('#r-tabs .tab').forEach((t,j)=>t.classList.toggle('active',j===i));
+  document.querySelectorAll('[id^="rview-"]').forEach((v,j)=>v.style.display=j===i?'block':'none');
+}
+
+// ── Render Comparação ──
+function renderComparacao(data){
+  const results=data.results||[];
+  const comp=data.comparison||{};
+  const winner=comp.winner;
+  const summary=comp.summary||[];
+  if(!results.length){showError('comp-content','Sem dados para comparar');return;}
+
+  // Tab 0 — Visão Geral
+  const tableRows=summary.map(s=>`
+    <tr>
+      <td style="color:var(--text2);font-size:11.5px;">${ALGO_LABELS[s.algorithm]||s.algorithm}</td>
+      <td class="tick" style="color:${ALGO_COLORS[s.algorithm]}">${pct(s.expected_return)}</td>
+      <td class="tick">${pct(s.portfolio_volatility)}</td>
+      <td class="tick ${(s.sharpe_ratio||0)>0?'pos':''}">${fmt(s.sharpe_ratio,4)}</td>
+      <td class="tick" style="color:var(--text2);">${ms(s.elapsed_ms)}</td>
+    </tr>`).join('');
+
+  const donutsHtml=summary.map(s=>{
+    const we=Object.entries(s.weights||{}).sort((a,b)=>b[1]-a[1]);
+    const segs=buildPie(we,70,13);
+    const color=ALGO_COLORS[s.algorithm]||'#fff';
+    return `<div class="donut-wrap">
+      <svg width="70" height="70" viewBox="0 0 70 70">${segs}<circle cx="35" cy="35" r="22" fill="var(--surface)"/></svg>
+      <div class="donut-label-s" style="color:${color}">${(ALGO_LABELS[s.algorithm]||s.algorithm).replace(' ','\n')}</div>
+    </div>`;
+  }).join('');
+
+  // Tab 1 — Detalhada
+  const detailCards=results.map(r=>{
+    const meta=r.metadata||{};
+    const we=Object.entries(r.weights||{}).sort((a,b)=>b[1]-a[1]);
+    const top3=we.slice(0,3).map(([s,w])=>`<span>${cleanTick(s)}(${pct(w)})</span>`).join(' · ');
+    const isWinner=r.algorithm===winner;
+    return `<div class="method-card" style="${isWinner?'border-color:rgba(251,191,36,.3);':''}"}>
+      <div class="method-head">
+        <div class="method-name">
+          <div class="method-icon" style="background:${ALGO_COLORS[r.algorithm]}22;color:${ALGO_COLORS[r.algorithm]}">${ALGO_ICONS[r.algorithm]||'◎'}</div>
+          ${ALGO_LABELS[r.algorithm]||r.algorithm}
+          ${isWinner?'<div class="winner-badge">⭐ Melhor</div>':''}
         </div>
+        <div class="badge badge-${r.algorithm==='linear_programming'?'green':r.algorithm==='genetic_algorithm'?'purple':'blue'}">${r.algorithm==='linear_programming'?'Exata':r.algorithm==='genetic_algorithm'?'Heurística':'Estocástica'}</div>
+      </div>
+      <div class="method-stats">
+        <div class="mstat"><div class="ms-l">Sharpe</div><div class="ms-v pos">${fmt(meta.sharpe_ratio,4)}</div></div>
+        <div class="mstat"><div class="ms-l">Retorno</div><div class="ms-v">${pct(r.expected_return)}</div></div>
+        <div class="mstat"><div class="ms-l">Volatil.</div><div class="ms-v">${pct(meta.portfolio_volatility)}</div></div>
+        <div class="mstat"><div class="ms-l">Tempo</div><div class="ms-v">${ms(r.elapsed_ms)}</div></div>
+      </div>
+      <div class="top-ativos">Top ${we.length>3?3:we.length}: ${top3}</div>
+    </div>`;
+  }).join('');
 
-        <div class="row">
-          <label for="algorithm">Algoritmo</label>
-          <select id="algorithm">
-            <option value="linear_programming">Linear Programming</option>
-            <option value="genetic_algorithm">Genetic Algorithm</option>
-            <option value="simulated_annealing">Simulated Annealing</option>
-            <option value="all">Todos (comparacao)</option>
-          </select>
+  const recAlgo=ALGO_LABELS[winner]||winner;
+  const recResult=summary.find(s=>s.algorithm===winner)||{};
+
+  document.getElementById('comp-content').innerHTML=`
+    <div class="tabs">
+      <div class="tab active" id="ctab-0" onclick="switchCTab(0)">Visão Geral</div>
+      <div class="tab" id="ctab-1" onclick="switchCTab(1)">Comparação Detalhada</div>
+    </div>
+    <div id="cview-0">
+      <div class="section-title">Comparativo de Métricas</div>
+      <div class="card" style="padding:0;overflow:hidden;">
+        <table class="tbl">
+          <thead><tr><th>Algoritmo</th><th>Retorno</th><th>Volatil.</th><th>Sharpe</th><th>Tempo</th></tr></thead>
+          <tbody>${tableRows}</tbody>
+        </table>
+      </div>
+      <div class="divider"></div>
+      <div class="section-title">Alocação por Método</div>
+      <div class="donut-row">${donutsHtml}</div>
+      <button class="btn btn-ghost" onclick="nav('dashboard',document.querySelector('.nav-item:nth-child(6)'))">📊 Dashboard Comparativo</button>
+      <button class="btn btn-outline" onclick="exportCSV()">↓ Exportar Comparativo</button>
+    </div>
+    <div id="cview-1" style="display:none;">
+      ${detailCards}
+      <div class="rec-card">
+        <div class="rec-head">⭐ Recomendação Técnica</div>
+        <div class="rec-body">Com base na otimização executada, o método <strong>${recAlgo}</strong> obteve o melhor desempenho.
+        Retorno esperado: <strong>${pct(recResult.expected_return)}</strong>, volatilidade: <strong>${pct(recResult.portfolio_volatility)}</strong>,
+        Sharpe: <strong>${fmt(recResult.sharpe_ratio,4)}</strong>, tempo: <strong>${ms(recResult.elapsed_ms)}</strong>.</div>
+      </div>
+      <button class="btn btn-primary" onclick="nav('dashboard',document.querySelector('.nav-item:nth-child(6)'))">📊 Dashboard Comparativo</button>
+    </div>`;
+}
+function switchCTab(i){
+  [0,1].forEach(n=>{
+    document.getElementById('ctab-'+n)?.classList.toggle('active',n===i);
+    const v=document.getElementById('cview-'+n);
+    if(v) v.style.display=n===i?'block':'none';
+  });
+}
+
+// ── Render Dashboard ──
+function renderDashboard(data){
+  const summary=(data.comparison||{}).summary||[];
+  if(!summary.length){showError('dash-content','Sem dados');return;}
+
+  // Build scatter data for frontier
+  const scatterPoints=summary.map((s,i)=>{
+    const vol=s.portfolio_volatility||0;
+    const ret=s.expected_return||0;
+    const color=ALGO_COLORS[s.algorithm]||'#fff';
+    return {vol,ret,color,label:ALGO_LABELS[s.algorithm]||s.algorithm};
+  });
+  const minVol=Math.min(...scatterPoints.map(p=>p.vol));
+  const maxVol=Math.max(...scatterPoints.map(p=>p.vol));
+  const minRet=Math.min(...scatterPoints.map(p=>p.ret));
+  const maxRet=Math.max(...scatterPoints.map(p=>p.ret));
+  const svgW=300,svgH=150,pad=28;
+  const scaleX=v=>pad+(v-minVol)/(maxVol-minVol+.0001)*(svgW-pad*2);
+  const scaleY=v=>svgH-pad-(v-minRet)/(maxRet-minRet+.0001)*(svgH-pad*2);
+  const circles=scatterPoints.map(p=>`
+    <circle cx="${scaleX(p.vol).toFixed(1)}" cy="${scaleY(p.ret).toFixed(1)}" r="6" fill="${p.color}"/>
+    <text x="${(scaleX(p.vol)+8).toFixed(1)}" y="${(scaleY(p.ret)+4).toFixed(1)}" font-size="8" fill="${p.color}">${p.label}</text>`).join('');
+  const legendSvg=scatterPoints.map(p=>`
+    <div class="legend-item"><div class="legend-dot" style="background:${p.color};border-radius:50%;"></div>
+    <span style="font-size:11px;color:var(--text2);">${p.label}</span></div>`).join('');
+
+  const tableRows=summary.map(s=>`
+    <tr>
+      <td style="display:flex;align-items:center;gap:6px;padding:9px 9px;">
+        <div style="width:6px;height:6px;border-radius:50%;background:${ALGO_COLORS[s.algorithm]};flex-shrink:0;"></div>
+        <span style="font-size:12px;">${ALGO_LABELS[s.algorithm]||s.algorithm}</span>
+      </td>
+      <td class="tick pos">${pct(s.expected_return)}</td>
+      <td class="tick">${pct(s.portfolio_volatility)}</td>
+      <td class="tick" style="color:var(--text2);">${ms(s.elapsed_ms)}</td>
+      <td class="tick ${(s.sharpe_ratio||0)>0?'pos':''}">${fmt(s.sharpe_ratio,4)}</td>
+    </tr>`).join('');
+
+  document.getElementById('dash-content').innerHTML=`
+    <div class="tabs">
+      <div class="tab active" id="dtab-0" onclick="switchDTab(0)">Parâmetros</div>
+      <div class="tab" id="dtab-1" onclick="switchDTab(1)">Resultados</div>
+      <div class="tab" id="dtab-2" onclick="switchDTab(2)">Relatórios</div>
+    </div>
+    <div id="dview-0">
+      <div class="card">
+        <div class="section-title">Configurações Utilizadas</div>
+        <div style="display:flex;flex-direction:column;gap:9px;margin-top:7px;">
+          ${[
+            ['Ativos',((data.symbols||[]).map(cleanTick).join(', '))||data.symbol||'—'],
+            ['Período',data.period||'—'],
+            ['Intervalo',data.interval||'1d'],
+            ['Objetivo',data.objective||'—'],
+            ['Amostras',(((data.results||[])[0]||{}).metadata||{}).samples||'—'],
+            ['Peso Máximo',(((data.results||[])[0]||{}).metadata||{}).max_weight||'—'],
+          ].map(([k,v])=>`<div style="display:flex;justify-content:space-between;font-size:13px;border-bottom:1px solid var(--border);padding-bottom:8px;">
+            <span style="color:var(--text2);">${k}</span><span class="tick">${v}</span></div>`).join('')}
         </div>
-
-        <div class="row">
-          <label for="maxWeight">Max Weight</label>
-          <input id="maxWeight" value="0.6" />
+      </div>
+    </div>
+    <div id="dview-1" style="display:none;">
+      <div class="chart-area">
+        <div class="chart-title"><span>Fronteira de Eficiência</span><span style="font-size:10px;color:var(--text3);">Risco × Retorno</span></div>
+        <div style="padding:12px;">
+          <svg width="100%" height="${svgH}" viewBox="0 0 ${svgW} ${svgH}" preserveAspectRatio="xMidYMid meet">
+            <line x1="${pad}" y1="${pad}" x2="${pad}" y2="${svgH-pad}" stroke="rgba(255,255,255,.05)" stroke-width="1"/>
+            <line x1="${pad}" y1="${svgH-pad}" x2="${svgW-pad}" y2="${svgH-pad}" stroke="rgba(255,255,255,.05)" stroke-width="1"/>
+            <text x="${pad+2}" y="${svgH-pad+12}" font-size="8" fill="rgba(255,255,255,.3)">Risco →</text>
+            ${circles}
+          </svg>
+          <div style="display:flex;gap:14px;justify-content:center;margin-top:6px;">${legendSvg}</div>
         </div>
+      </div>
+      <div class="section-title">Sumário de Performance</div>
+      <div class="card" style="padding:0;">
+        <table class="sum-tbl">
+          <thead><tr><th>Método</th><th>Retorno</th><th>Risco</th><th>Tempo</th><th>Sharpe</th></tr></thead>
+          <tbody>${tableRows}</tbody>
+        </table>
+      </div>
+    </div>
+    <div id="dview-2" style="display:none;">
+      <div class="academic">
+        <strong>Análise Acadêmica:</strong> Os métodos foram comparados em termos de retorno esperado, volatilidade e índice Sharpe.
+        O vencedor (<strong>${ALGO_LABELS[(data.comparison||{}).winner]||'—'}</strong>) obteve o menor valor de função objetivo.
+        Métodos heurísticos (AG, SA) exploram espaços não-convexos enquanto a Programação Linear garante ótimo global com restrições lineares.
+      </div>
+      <div class="section-title">Exportar</div>
+      <button class="btn btn-ghost" onclick="exportCSV()">↓ Dados CSV</button>
+      <button class="btn btn-outline" onclick="exportJSON()">↓ JSON Completo</button>
+      <button class="btn btn-primary" onclick="exportPDF()" style="margin-top:8px;">📑 Relatório PDF (via API)</button>
+    </div>`;
+}
+function switchDTab(i){
+  [0,1,2].forEach(n=>{
+    document.getElementById('dtab-'+n)?.classList.toggle('active',n===i);
+    const v=document.getElementById('dview-'+n);
+    if(v) v.style.display=n===i?'block':'none';
+  });
+}
 
-        <div class="row">
-          <button id="btnStatus" type="button">Verificar Status</button>
-          <button id="btnRun" type="button">Executar</button>
-          <button id="btnExport" type="button">Exportar</button>
-          <button id="btnPdf" type="button">Gerar PDF</button>
-        </div>
+// ── Render Home ──
+function renderHome(data){
+  const winner=(data.comparison||{}).winner;
+  const winData=((data.comparison||{}).summary||[]).find(s=>s.algorithm===winner)||{};
+  const syms=(data.symbols||[]).map(cleanTick);
+  document.getElementById('home-last-result').innerHTML=`
+    <div class="hl-card">
+      <div class="hl-label">Método Vencedor</div>
+      <div class="hl-main">
+        <div class="hl-tick">${ALGO_LABELS[winner]||winner||'—'}</div>
+        <div class="badge badge-yellow">⭐ Melhor</div>
+      </div>
+    </div>
+    <div class="hl-card">
+      <div class="hl-label">Melhor Sharpe</div>
+      <div class="hl-main">
+        <div class="hl-tick">${fmt(winData.sharpe_ratio,4)}</div>
+        <div class="hl-val pos">${pct(winData.expected_return)}</div>
+      </div>
+    </div>
+    <div class="card" style="padding:0;margin-top:11px;">
+      <table class="tbl">
+        <thead><tr><th>Algoritmo</th><th>Retorno</th><th>Volatil.</th><th>Sharpe</th></tr></thead>
+        <tbody>${((data.comparison||{}).summary||[]).map(s=>`
+          <tr><td style="font-size:11.5px;color:${ALGO_COLORS[s.algorithm]}">${ALGO_LABELS[s.algorithm]||s.algorithm}</td>
+          <td class="tick pos">${pct(s.expected_return)}</td>
+          <td class="tick">${pct(s.portfolio_volatility)}</td>
+          <td class="tick pos">${fmt(s.sharpe_ratio,4)}</td></tr>`).join('')}
+        </tbody>
+      </table>
+    </div>`;
+}
 
-        <div id="statusBox" class="status">Aguardando acao...</div>
-      </section>
+// ── Pie / Donut Builder ──
+function buildPie(entries,size,stroke){
+  const cx=size/2,cy=size/2,r=(size/2)-stroke/2-2;
+  const total=entries.reduce((s,[,v])=>s+v,0);
+  if(total===0) return '';
+  const circ=2*Math.PI*r;
+  let offset=0;
+  return entries.map(([sym,w],i)=>{
+    const frac=w/total;
+    const dash=frac*circ;
+    const seg=`<circle cx="${cx}" cy="${cy}" r="${r}" fill="none" stroke="${PIE_COLORS[i%PIE_COLORS.length]}" stroke-width="${stroke}" stroke-dasharray="${dash.toFixed(2)} ${(circ-dash).toFixed(2)}" stroke-dashoffset="${(-offset).toFixed(2)}" transform="rotate(-90 ${cx} ${cy})"/>`;
+    offset+=dash;
+    return seg;
+  }).join('');
+}
 
-      <section class="panel">
-        <h2>Insights</h2>
-        <div class="insight-card">
-          <div class="insight-label">Ativo de maior risco</div>
-          <div id="insightRiskAsset" class="insight-value">-</div>
-        </div>
-        <div class="insight-card">
-          <div class="insight-label">Ativo de menor risco</div>
-          <div id="insightMinRiskAsset" class="insight-value">-</div>
-        </div>
-        <div class="insight-card">
-          <div class="insight-label">Melhor Sharpe</div>
-          <div id="insightBestSharpe" class="insight-value">-</div>
-        </div>
-        <div class="insight-card">
-          <div class="insight-label">Menor volatilidade de portfolio</div>
-          <div id="insightMinVol" class="insight-value">-</div>
-        </div>
-      </section>
+// ── Export ──
+function exportCSV(){
+  if(!apiData){alert('Execute uma análise primeiro.');return;}
+  const rows=(apiData.comparison||{}).summary||[];
+  if(!rows.length){alert('Sem dados para exportar.');return;}
+  const headers=['algorithm','expected_return','portfolio_volatility','sharpe_ratio','elapsed_ms','objective_value'];
+  const csv=[headers.join(','),...rows.map(r=>headers.map(h=>r[h]??'').join(','))].join('\n');
+  download('comparison_summary.csv',new Blob([csv],{type:'text/csv'}));
+}
+function exportJSON(){
+  if(!apiData){alert('Execute uma análise primeiro.');return;}
+  download('full_report.json',new Blob([JSON.stringify(apiData,null,2)],{type:'application/json'}));
+}
+function exportWeightsCSV(){
+  if(!apiData){alert('Execute uma análise primeiro.');return;}
+  const results=apiData.results||[];
+  const allSyms=[...new Set(results.flatMap(r=>Object.keys(r.weights||{})))];
+  const headers=['algorithm',...allSyms];
+  const rows=results.map(r=>[r.algorithm,...allSyms.map(s=>(r.weights||{})[s]??0)]);
+  const csv=[headers.join(','),...rows.map(r=>r.join(','))].join('\n');
+  download('weights_by_algorithm.csv',new Blob([csv],{type:'text/csv'}));
+}
+async function exportPDF(){
+  if(!apiData){alert('Execute uma análise primeiro.');return;}
+  try{
+    const symbols=(apiData.symbols||[]);
+    const r=await fetch(getApiUrl()+'/report/pdf',{
+      method:'POST',headers:{'Content-Type':'application/json'},
+      body:JSON.stringify({algorithm:'all',symbols,period:apiData.period,start_date:apiData.start_date,end_date:apiData.end_date}),
+      signal: (() => { const c = new AbortController(); setTimeout(() => c.abort(), 180000); return c.signal; })()
+    });
+    if(!r.ok){const e=await r.json().catch(()=>({}));alert('Erro ao gerar PDF: '+(e.message||r.status));return;}
+    const blob=await r.blob();
+    download('relatorio.pdf',blob);
+  }catch(e){alert('Erro: '+e.message);}
+}
+function download(name,blob){
+  const url=URL.createObjectURL(blob);
+  const a=document.createElement('a');
+  a.href=url;a.download=name;document.body.appendChild(a);a.click();a.remove();
+  setTimeout(()=>URL.revokeObjectURL(url),1000);
+}
 
-      <section class="panel">
-        <h2>Resultado</h2>
-        <div class="metrics">
-          <div><span>Universo:</span> <strong id="mSymbol">-</strong></div>
-          <div><span>Objective:</span> <strong id="mObjective">-</strong></div>
-          <div><span>Objective Value:</span> <strong id="mObjValue">-</strong></div>
-          <div><span>Expected Return:</span> <strong id="mReturn">-</strong></div>
-          <div><span>Elapsed (ms):</span> <strong id="mElapsed">-</strong></div>
-          <div><span>Portfolio Volatility:</span> <strong id="mPortVol">-</strong></div>
-          <div><span>Sharpe Ratio:</span> <strong id="mSharpe">-</strong></div>
-        </div>
+// ── Init ──
+const defaultApiUrl =
+  window.OTIMIZADOR_API_BASE_URL ||
+  'https://rqdwpiwn5b.execute-api.us-east-2.amazonaws.com/prod';
+document.getElementById('api-url').value = defaultApiUrl;
+document.getElementById('cfg-url').value = defaultApiUrl;
 
-        <h3>Pesos por ativo</h3>
-        <pre id="weights">{}</pre>
-
-        <h3>Contribuicao de risco (%)</h3>
-        <pre id="riskPct">{}</pre>
-
-        <h3>Resposta bruta</h3>
-        <pre id="raw">{}</pre>
-      </section>
-    </main>
-
-    <script src="./app.js?v=2"></script>
-  </body>
+// Add default tickers
+['PETR4','VALE3','ITUB4'].forEach(addTag);
+checkStatus();
+setTimeout(checkStatus,3000);
+</script>
+</body>
 </html>

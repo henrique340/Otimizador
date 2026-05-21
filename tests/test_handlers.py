@@ -25,10 +25,29 @@ def test_optimize_handler_uses_application(mocker):
         "otimizador.infrastructure.handlers.quantvision_optimize_handler.run_full_experiment",
         return_value={"symbol": "PETR4.SA,VALE3.SA", "symbols": ["PETR4.SA", "VALE3.SA"], "results": [], "comparison": {}},
     )
+    mocker.patch(
+        "otimizador.infrastructure.handlers.quantvision_optimize_handler._download_cache_from_s3"
+    )
     response = quantvision_optimize_handler.lambda_handler({}, None)
     body = json.loads(response["body"])
     assert response["statusCode"] == 200
     assert body["symbol"] == "PETR4.SA,VALE3.SA"
+
+
+def test_optimize_handler_tries_s3_cache_download(mocker):
+    download_mock = mocker.patch(
+        "otimizador.infrastructure.handlers.quantvision_optimize_handler._download_cache_from_s3"
+    )
+    mocker.patch(
+        "otimizador.infrastructure.handlers.quantvision_optimize_handler.run_full_experiment",
+        return_value={"symbol": "PETR4.SA", "symbols": ["PETR4.SA"], "results": [], "comparison": {}},
+    )
+
+    payload = {"symbols": ["PETR4.SA"], "start_date": "2015-01-01", "end_date": "2025-12-31"}
+    response = quantvision_optimize_handler.lambda_handler({"body": json.dumps(payload)}, None)
+
+    assert response["statusCode"] == 200
+    download_mock.assert_called_once_with(payload)
 
 
 def test_data_handler_returns_rows(mocker):
