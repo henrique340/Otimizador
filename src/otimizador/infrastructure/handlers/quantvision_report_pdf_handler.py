@@ -12,6 +12,9 @@ from pathlib import Path
 from otimizador.application import run_full_experiment
 from otimizador.evaluation.exporter import export_experiment_results
 from otimizador.evaluation.report_pdf import generate_pdf_report
+from otimizador.infrastructure.handlers.quantvision_optimize_handler import (
+    _download_cache_from_s3,
+)
 from otimizador.infrastructure.http import response
 
 
@@ -35,6 +38,7 @@ def lambda_handler(event, context):  # noqa: ARG001
 
     payload = _payload_from_event(event)
     try:
+        _download_cache_from_s3(payload)
         result = run_full_experiment(
             symbols=payload.get("symbols"),
             period=payload.get("period"),

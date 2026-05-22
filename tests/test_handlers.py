@@ -88,6 +88,9 @@ def test_report_pdf_handler_returns_base64(mocker, tmp_path):
     fake_pdf.write_bytes(b"%PDF-1.4\nmock")
 
     mocker.patch(
+        "otimizador.infrastructure.handlers.quantvision_report_pdf_handler._download_cache_from_s3"
+    )
+    mocker.patch(
         "otimizador.infrastructure.handlers.quantvision_report_pdf_handler.run_full_experiment",
         return_value={
             "symbol": "PETR4.SA,VALE3.SA",
@@ -113,3 +116,38 @@ def test_report_pdf_handler_returns_base64(mocker, tmp_path):
     assert response["headers"]["Content-Type"] == "application/pdf"
     assert response["isBase64Encoded"] is True
     assert isinstance(response["body"], str)
+
+
+def test_report_pdf_handler_tries_s3_cache_download(mocker, tmp_path):
+    fake_pdf = tmp_path / "report.pdf"
+    fake_pdf.write_bytes(b"%PDF-1.4\nmock")
+
+    download_mock = mocker.patch(
+        "otimizador.infrastructure.handlers.quantvision_report_pdf_handler._download_cache_from_s3"
+    )
+    mocker.patch(
+        "otimizador.infrastructure.handlers.quantvision_report_pdf_handler.run_full_experiment",
+        return_value={
+            "symbol": "PETR4.SA,VALE3.SA",
+            "symbols": ["PETR4.SA", "VALE3.SA"],
+            "results": [],
+            "comparison": {"winner": "linear_programming", "ranking": []},
+        },
+    )
+    mocker.patch(
+        "otimizador.infrastructure.handlers.quantvision_report_pdf_handler.export_experiment_results",
+        return_value={},
+    )
+    mocker.patch(
+        "otimizador.infrastructure.handlers.quantvision_report_pdf_handler.generate_pdf_report",
+        return_value=fake_pdf,
+    )
+
+    payload = {"symbols": ["PETR4.SA"], "regenerate_charts": False}
+    response = quantvision_report_pdf_handler.lambda_handler(
+        {"body": json.dumps(payload)},
+        None,
+    )
+
+    assert response["statusCode"] == 200
+    download_mock.assert_called_once_with(payload)
