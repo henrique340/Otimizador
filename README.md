@@ -47,35 +47,7 @@ Principais capacidades:
 ---
 
 ## Arquitetura
-
-```mermaid
-flowchart LR
-    U[Usuário / Frontend] --> API[API Gateway]
-
-    API --> D[Lambda /data]
-    API --> O[Lambda /optimize]
-    API --> R[Lambda /report]
-    API --> ST[Lambda /status]
-
-    Y[Yahoo Finance] --> D
-    D --> S3[(Amazon S3)]
-
-    O --> F[Feature Engineering]
-    F --> A[Algoritmos]
-    A --> C[Comparador]
-    C --> S3
-
-    R --> S3
-    ST --> S3
-
-    GH[GitHub] --> GA[GitHub Actions]
-    GA --> L[AWS Lambda]
-
-    D --> CW[CloudWatch]
-    O --> CW
-    R --> CW
-    ST --> CW
-```
+![Arquitetura](docs/figures/arquitetura.jpeg)
 
 ---
 
