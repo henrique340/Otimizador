@@ -47,7 +47,7 @@ Principais capacidades:
 ---
 
 ## Arquitetura
-![Arquitetura](docs/figures/Arquitetura.jpeg)
+![Arquitetura](docs/figures/arquitetura.jpeg)
 
 ---
 
