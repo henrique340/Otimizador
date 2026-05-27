@@ -264,7 +264,7 @@ body{font-family:'DM Sans',sans-serif;background:var(--bg);color:var(--text);min
   <div class="api-bar">
     <div class="dot" id="api-dot"></div>
     <label>API:</label>
-    <input type="text" id="api-url" value="https://rqdwpiwn5b.execute-api.us-east-2.amazonaws.com/prod" onchange="checkStatus()" onblur="checkStatus()">
+    <input type="text" id="api-url" value="https://rqdwpiwn5b.execute-api.us-east-2.amazonaws.com" onchange="checkStatus()" onblur="checkStatus()">
     <span id="api-status" style="color:var(--text3);font-size:11px;">verificando...</span>
   </div>
 
@@ -933,9 +933,23 @@ async function exportPDF(){
   if(!apiData){alert('Execute uma análise primeiro.');return;}
   try{
     const symbols=(apiData.symbols||[]);
+    const metadata=(((apiData.results||[])[0]||{}).metadata)||{};
+    const maxw=metadata.max_weight ?? (parseFloat(document.getElementById('p-maxweight').value)||0.6);
     const r=await fetch(getApiUrl()+'/report/pdf',{
       method:'POST',headers:{'Content-Type':'application/json'},
-      body:JSON.stringify({algorithm:'all',symbols,period:apiData.period,start_date:apiData.start_date,end_date:apiData.end_date}),
+      body:JSON.stringify({
+        algorithm:'all',
+        symbols,
+        period:apiData.period,
+        start_date:apiData.start_date,
+        end_date:apiData.end_date,
+        interval:apiData.interval||'1d',
+        max_weight:maxw,
+        export_dir:'/tmp/exports',
+        figures_dir:'/tmp/figures',
+        output_pdf:'/tmp/relatorio_otimizador.pdf',
+        regenerate_charts:false
+      }),
       signal: (() => { const c = new AbortController(); setTimeout(() => c.abort(), 180000); return c.signal; })()
     });
     if(!r.ok){const e=await r.json().catch(()=>({}));alert('Erro ao gerar PDF: '+(e.message||r.status));return;}
@@ -953,7 +967,7 @@ function download(name,blob){
 // ── Init ──
 const defaultApiUrl =
   window.OTIMIZADOR_API_BASE_URL ||
-  'https://rqdwpiwn5b.execute-api.us-east-2.amazonaws.com/prod';
+  'https://rqdwpiwn5b.execute-api.us-east-2.amazonaws.com';
 document.getElementById('api-url').value = defaultApiUrl;
 document.getElementById('cfg-url').value = defaultApiUrl;
 
