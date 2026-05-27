@@ -45,9 +45,24 @@ Principais capacidades:
 - deploy automatizado via GitHub Actions.
 
 ---
+## Como rodar?
+Abra o prompt de comando (CMD) e navegue até a sua pasta
+```bash
+cd/caminho/da/sua/pasta
+```
+Depois execute o seguinte comando:
+```bash
+cd "C:\Users\Henrique Yuji\Desktop\Otimizador\frontend"
+python -m http.server 8080
+```
+E Acesse a URL: 
+```bash
+http://localhost:8080
+```
+---
 
 ## Arquitetura
-![Arquitetura](docs/figures/Arquitetura.jpeg)
+![Arquitetura](docs/figures/arquitetura.jpeg)
 
 ---
 
@@ -56,7 +71,7 @@ Principais capacidades:
 Base URL:
 
 ```bash
-API_BASE_URL="https://<api-id>.execute-api.<region>.amazonaws.com"
+API_BASE_URL="[https://<api-id>.execute-api.<region>.amazonaws.com](https://rqdwpiwn5b.execute-api.us-east-2.amazonaws.com"
 ```
 
 | Método | Rota | Descrição |
@@ -65,43 +80,6 @@ API_BASE_URL="https://<api-id>.execute-api.<region>.amazonaws.com"
 | `POST` | `/optimize` | Executa a otimização |
 | `POST` | `/report` | Gera comparação ou relatório |
 | `GET` | `/status/{execution_id}` | Consulta o status da execução |
-
-### Exemplo `/optimize`
-
-```bash
-curl -X POST "$API_BASE_URL/optimize" \
-  -H "Content-Type: application/json" \
-  -d '{
-    "tickers": ["PETR4.SA", "VALE3.SA", "ITUB4.SA"],
-    "capital": 10000,
-    "algoritmo": "genetic",
-    "period": "5y",
-    "interval": "1d",
-    "risk_aversion": 1.0,
-    "max_weight": 0.6
-  }'
-```
-
-### Exemplo de resposta
-
-```json
-{
-  "execution_id": "uuid-da-execucao",
-  "algorithm": "genetic",
-  "objective_value": 0.1234,
-  "expected_return": 0.018,
-  "weights": {
-    "PETR4.SA": 0.35,
-    "VALE3.SA": 0.40,
-    "ITUB4.SA": 0.25
-  },
-  "elapsed_ms": 145.2,
-  "metadata": {
-    "risk_aversion": 1.0,
-    "max_weight": 0.6
-  }
-}
-```
 
 ---
 
